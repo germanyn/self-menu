@@ -16,7 +16,7 @@ export const comparePassword = (senhaPlana: string, hash: string) => {
 
 export const gerarToken = (usuario: Usuario) => {
     const payload: TokenPayload = {
-        iss: usuario.id,
+        iss: usuario._id,
     }
     return sign(payload, SECRET)
 }

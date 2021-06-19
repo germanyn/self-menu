@@ -1,23 +1,25 @@
-import { Entity, BaseEntity, Column, ObjectIdColumn, ManyToOne } from "typeorm";
 import { ObjectType, Field, ID, Float } from "type-graphql";
 import { Conta } from "../conta/Conta";
+import { prop, Ref } from "@typegoose/typegoose";
 
-@Entity()
 @ObjectType()
-export class Produto extends BaseEntity {
+export class Produto {
   @Field(() => ID)
-  @ObjectIdColumn()
-  id: string;
+  @prop()
+  _id: string;
 
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   nome: string;
 
   @Field(() => Float)
-  @Column('float')
+  @prop()
   preco: number;
 
   @Field(() => Conta)
-  @ManyToOne(() => Conta)
-  conta: Promise<Conta>
+  @prop({
+    ref: () => Conta,
+    required: true,
+  })
+  conta: Conta
 }

@@ -1,32 +1,28 @@
-import { Entity, BaseEntity, Column, ObjectIdColumn, ManyToMany, OneToMany } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { Usuario } from "../usuario/Usuario";
 import { Loja } from "../loja/Loja";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 
-@Entity()
 @ObjectType()
-export class Conta extends BaseEntity {
+export class Conta {
   @Field(() => ID)
-  @ObjectIdColumn()
-  id: string;
+  _id: string;
 
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   nome: string;
 
   @Field(() => Usuario)
-  @Column()
+  @prop({
+    ref: () => Usuario,
+    required: true,
+  })
   dono: Usuario;
 
-  @Field(() => [Usuario])
-  @ManyToMany(() => Usuario, usuario => usuario.contas, {
-    cascade: ['insert']
-  })
-  usuarios: Usuario[];
-
   @Field(() => [Loja])
-  @OneToMany(() => Loja, loja => loja.conta, {
-    cascade: true,
+  @prop({
+    ref: () => Loja,
+    required: true,
   })
-  lojas: Promise<Loja[]> = Promise.resolve([])
+  lojas: Loja[]
 }

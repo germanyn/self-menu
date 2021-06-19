@@ -1,30 +1,34 @@
-import { Entity, BaseEntity, Column, ObjectIdColumn, ManyToOne, JoinColumn } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { Conta } from "../conta/Conta";
 import { Endereco } from "../commons/Endereco";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
+import { Schema } from "mongoose";
 
-@Entity()
 @ObjectType()
-export class Loja extends BaseEntity {
+export class Loja {
   @Field(() => ID)
-  @ObjectIdColumn()
-  id: string;
+  _id: string;
 
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   nome: string;
 
   @Field(() => String, { nullable: true })
-  @Column('varchar')
+  @prop({
+    type: () => Schema.Types.String
+  })
   cnpj: string | null;
 
   @Field(() => Endereco, { nullable: true })
-  @Column()
-  enereco: Endereco | null
+  @prop({
+    type: () => Endereco,
+  })
+  endereco: Endereco | null
 
   @Field(() => Conta)
-  @ManyToOne(() => Conta, conta => conta.lojas, {
-    nullable: false,
+  @prop({
+    ref: () => Conta,
+    required: true,
   })
-  conta: Promise<Conta>
+  conta: Conta
 }

@@ -1,25 +1,32 @@
-import { Entity, BaseEntity, Column, ObjectIdColumn, ManyToOne, ManyToMany, JoinColumn } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { Conta } from "../conta/Conta";
+import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 
-@Entity()
 @ObjectType()
-export class Usuario extends BaseEntity {
+export class Usuario {
   @Field(() => ID)
-  @ObjectIdColumn()
-  id: string;
+  _id: string;
 
   @Field(() => String)
-  @Column()
+  @prop({
+    required: true,
+  })
   nome: string;
 
   @Field(() => String)
-  @Column()
+  @prop({
+    required: true,
+  })
   login: string;
 
-  @Column({ nullable: false, select: false })
+  @prop({
+    select: false,
+    required: true,
+  })
   senha: string;
 
-  @ManyToMany(() => Conta, conta => conta.usuarios)
+  @prop({
+    ref: () => Conta,
+  })
   contas: Conta[]
 }

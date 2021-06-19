@@ -1,16 +1,17 @@
-import { Resolver, Query, Arg, Authorized } from "type-graphql"
+import { Resolver, Query, Arg, Authorized, FieldResolver } from "type-graphql"
+import { UsuarioModel } from "../models";
 import { Usuario } from "./Usuario";
 
-@Resolver()
+@Resolver(() => Usuario)
 export class UsuarioResolver {
   @Query(() => [Usuario])
   @Authorized()
   usuarios() {
-    return Usuario.find();
+    return UsuarioModel.find();
   }
 
   @Query(() => Usuario)
   usuario(@Arg("id") id: string) {
-    return Usuario.findOneOrFail(id);
+    return UsuarioModel.findById(id);
   }
 }

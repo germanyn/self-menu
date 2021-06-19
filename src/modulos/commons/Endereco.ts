@@ -1,32 +1,35 @@
-import { BaseEntity, Column, ObjectIdColumn } from "typeorm";
+import { prop } from "@typegoose/typegoose";
+import { Schema } from "mongoose";
 import { ObjectType, Field, Int, InputType } from "type-graphql";
 
 @InputType('EntradaDeEndereco')
 @ObjectType()
-export class Endereco extends BaseEntity {
+export class Endereco {
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   rua: string;
 
   @Field(() => Int)
-  @Column()
+  @prop({ required: true })
   numero: number;
 
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   cep: string;
 
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   cidade: string;
 
   @Field(() => String)
-  @Column()
+  @prop({ required: true })
   uf: string;
 
   @Field(() => String, {
-      nullable: true
+      nullable: true,
   })
-  @Column({ nullable: true })
-  complemento: string | null;
+  @prop({
+    type: () => Schema.Types.String,
+  })
+  complemento: string | null
 }

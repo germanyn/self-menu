@@ -1,24 +1,30 @@
-import { Resolver, Query, Mutation, Arg, Authorized } from "type-graphql"
-import { Produto } from "./Produto";
-import { EntradaDeProduto } from "./EntradaDeProduto";
+import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver } from "type-graphql"
+import { Produto } from "./Produto"
+import { EntradaDeProduto } from "./EntradaDeProduto"
+import { ContaModel, ProdutoModel } from "../models"
 
-@Resolver()
-export class ProdutoResolver {
+@Resolver(() => Produto)
+export class ProdutoResolver implements ResolverInterface<Produto> {
   @Query(() => [Produto])
   produtos() {
-    return Produto.find();
+    return ProdutoModel.find()
   }
 
   @Query(() => Produto)
   produto(@Arg("id") id: string) {
-    return Produto.findOneOrFail({ where: { id } });
+    return ProdutoModel.findById(id)
   }
 
   @Authorized()
   @Mutation(() => Produto)
   async criarProduto(@Arg("data") entrada: EntradaDeProduto) {
-    const produto = Produto.create(entrada);
-    await produto.save();
-    return produto;
+    return ProdutoModel.create(entrada)
+  }
+
+  @FieldResolver()
+  async conta(@Root() produto: Produto) {
+    const conta = await ContaModel.findOne(produto.conta)
+    if (!conta) throw new Error('Conta não encontrado')
+    return conta
   }
 }

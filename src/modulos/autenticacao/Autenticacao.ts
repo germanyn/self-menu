@@ -1,8 +1,7 @@
-import { BaseEntity } from "typeorm";
 import { Field, InputType } from "type-graphql";
 
 @InputType()
-export class Autenticacao extends BaseEntity {
+export class Autenticacao {
   @Field(() => String)
   login: string;
 

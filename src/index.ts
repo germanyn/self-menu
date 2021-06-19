@@ -1,18 +1,16 @@
 import "reflect-metadata"
-import { createConnection } from "typeorm"
 import { ApolloServer } from "apollo-server-koa"
-import entities from "./entidades"
 import schema from "./schema"
 import koa from 'koa'
 import jwt = require('koa-jwt')
 import { SECRET } from "./infraestrutura/autenticacao"
 import { Context } from "./infraestrutura/context"
+import { connect } from "mongoose"
 
 async function main() {
-  await createConnection({
-    type: 'mongodb',
-    database: 'Gardapio',
-    entities,
+  const db = await connect('mongodb://localhost:27017/Gardapio2', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
   })
 
   const app = new koa()
@@ -29,7 +27,10 @@ async function main() {
   const server = new ApolloServer({
     schema: await schema,
     context: ({ ctx }): Context => {
-      return ctx
+      return {
+        ...ctx,
+        db,
+      }
     },
   })
   await server.start()
