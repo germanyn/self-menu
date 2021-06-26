@@ -16,14 +16,14 @@ export const comparePassword = (senhaPlana: string, hash: string) => {
 
 export const gerarToken = (usuario: Usuario) => {
     const payload: TokenPayload = {
-        iss: usuario._id,
+        iss: usuario._id.toString(),
     }
     return sign(payload, SECRET)
 }
 
 export const customAuthChecker: AuthChecker<any> = ({ context }: { context: Context }) => {
-    if (context.state.jwtOriginalError) {
-        throw context.state.jwtOriginalError
+    if (context.jwtOriginalError) {
+        throw context.jwtOriginalError
     }
     return true;
 };

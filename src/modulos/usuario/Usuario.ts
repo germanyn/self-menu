@@ -1,11 +1,12 @@
-import { ObjectType, Field, ID } from "type-graphql";
+import { prop, modelOptions, Ref } from "@typegoose/typegoose";
+import { ObjectId, Types } from "mongoose";
+import { Field, ID, ObjectType } from "type-graphql";
 import { Conta } from "../conta/Conta";
-import { getModelForClass, prop, Ref } from "@typegoose/typegoose";
 
 @ObjectType()
 export class Usuario {
   @Field(() => ID)
-  _id: string;
+  _id: Types.ObjectId
 
   @Field(() => String)
   @prop({
@@ -19,14 +20,19 @@ export class Usuario {
   })
   login: string;
 
+  @Field(() => String)
+  @prop()
+  email: string;
+
   @prop({
     select: false,
     required: true,
   })
   senha: string;
 
+  @Field(() => Conta)
   @prop({
     ref: () => Conta,
   })
-  contas: Conta[]
+  contas: Ref<Conta>[]
 }

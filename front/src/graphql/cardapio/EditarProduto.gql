@@ -1,0 +1,8 @@
+mutation EditarProduto(
+  $id: String!
+  $produto: EntradaDeProduto!
+) {
+  editarProduto(id: $id, produto: $produto) {
+    ...ProdutoDoCardapio
+  }
+}

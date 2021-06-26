@@ -1,25 +1,33 @@
-import { ObjectType, Field, ID, Float } from "type-graphql";
-import { Conta } from "../conta/Conta";
 import { prop, Ref } from "@typegoose/typegoose";
+import { Types } from "mongoose";
+import { Field, Float, ID, ObjectType } from "type-graphql";
+import { Conta } from "../conta/Conta";
 
 @ObjectType()
 export class Produto {
   @Field(() => ID)
-  @prop()
-  _id: string;
+  _id: Types.ObjectId
 
-  @Field(() => String)
+  @Field()
   @prop({ required: true })
   nome: string;
 
-  @Field(() => Float)
+  @Field({ nullable: true })
   @prop()
-  preco: number;
+  descricao?: string;
+
+  @Field(() => Float, { nullable: true })
+  @prop()
+  preco?: number;
+
+  @Field({ nullable: true })
+  @prop()
+  urlDoPrato?: string;
 
   @Field(() => Conta)
   @prop({
     ref: () => Conta,
     required: true,
   })
-  conta: Conta
+  conta: Ref<Conta>
 }

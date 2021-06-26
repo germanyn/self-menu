@@ -1,39 +1,53 @@
 import { mongoose } from "@typegoose/typegoose"
 import { Resolver, Query, Mutation, Arg, Root, FieldResolver, ResolverInterface, Field } from "type-graphql"
-import { hashPassword } from "../../infraestrutura/autenticacao"
+import { gerarToken, hashPassword } from "../../infraestrutura/autenticacao"
 import { ContaModel, LojaModel, UsuarioModel } from "../models"
-import { Usuario} from "../usuario/Usuario"
 import { Conta } from "./Conta"
 import { EntradaDeConta } from "./EntradaDeConta"
+import { RegistroDeConta } from "./RegistroDeConta"
 
 @Resolver(() => Conta)
 export class ContaResolver implements ResolverInterface<Conta> {
   @Query(() => [Conta])
   contas() {
-    return ContaModel.find()
+    return ContaModel.find().lean()
   }
 
   @Query(() => Conta)
   conta(@Arg("id") id: string) {
-    return ContaModel.findById(id)
+    return ContaModel.findById(id).lean()
   }
 
-  @Mutation(() => Conta)
-  async criarConta(@Arg("data") entrada: EntradaDeConta) {
+  @Mutation(() => RegistroDeConta)
+  async criarConta(@Arg("entrada") entrada: EntradaDeConta): Promise<RegistroDeConta> {
     const dono = await UsuarioModel.create({
-      nome: entrada.nome,
-      login: entrada.login,
+      nome: entrada.restaurante,
+      login: entrada.email,
+      email: entrada.email,
       senha: hashPassword(entrada.senha),
     })
     const conta = await ContaModel.create({
       nome: entrada.restaurante,
+      usuarios: [],
+      lojas: [],
       dono,
     })
-    await LojaModel.create({
+    dono.contas.push(conta._id)
+    await dono.save()
+    const loja = await LojaModel.create({
       nome: entrada.restaurante,
-      conta,
+      conta: [conta._id],
+      editores: [dono._id],
     })
-    return conta
+
+    conta.lojas.push(loja._id)
+    conta.dono = dono._id
+    await conta.save()
+
+    return {
+      conta: conta.toObject<Conta>(),
+      token: gerarToken(dono),
+    }
   }
 
   @Mutation(() => Boolean)
@@ -46,15 +60,23 @@ export class ContaResolver implements ResolverInterface<Conta> {
 
   @FieldResolver()
   async dono(@Root() conta: Conta) {
-    const dono = await UsuarioModel.findOne(conta.dono)
-    if (!dono) throw new Error('Dono não encontrado')
-    return dono
+    const retorno = await ContaModel.populate(conta, {
+      path: 'dono',
+      options: {
+        lean: true,
+      },
+    })
+    return retorno.dono
   }
 
   @FieldResolver()
   async lojas(@Root() conta: Conta) {
-    const lojas = await LojaModel.find(conta.lojas)
-    if (!lojas) throw new Error('Lojas não encontrado')
-    return lojas
+    const retorno = await ContaModel.populate(conta, {
+      path: 'lojas',
+      options: {
+        lean: true,
+      },
+    })
+    return retorno.lojas
   }
 }

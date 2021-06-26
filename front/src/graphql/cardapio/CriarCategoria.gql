@@ -1,0 +1,5 @@
+mutation CriarCategoria($entrada: EntradaDeCategoria!) {
+  criarCategoria(data: $entrada) {
+    ...CategoriaDoCardapio
+  }
+}

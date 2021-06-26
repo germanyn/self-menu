@@ -4,19 +4,21 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon -w src --ext ts --exec ts-node src/index.ts"
+    "start": "nodemon -w src --ext ts --exec ts-node src/index.ts",
+    "migrate": "ts-node ./node_modules/.bin/migrate"
   },
-  "author": "Rahman Fadhil <rhmnfadhil@gmail.com> (https://rahmanfadhil.com/)",
-  "license": "MIT",
   "dependencies": {
     "@typegoose/typegoose": "^7.6.1",
     "apollo-server": "^2.9.16",
-    "apollo-server-koa": "^2.25.1",
+    "apollo-server-express": "^2.25.1",
     "bcrypt": "^5.0.1",
+    "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-jwt": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
-    "koa-jwt": "^4.0.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^10.0.0",
+    "migrate-mongoose": "^4.0.0",
     "mongodb": "^3.6.9",
     "mongoose": "^5.12.14",
     "reflect-metadata": "^0.1.13",
@@ -24,12 +26,13 @@
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
+    "@types/express": "^4.17.12",
     "@types/express-jwt": "^6.0.1",
     "@types/jsonwebtoken": "^8.5.1",
     "@types/mongodb": "^3.6.18",
     "@types/mongoose": "^5.11.97",
     "nodemon": "^2.0.2",
     "ts-node": "^8.6.0",
-    "typescript": "^3.7.4"
+    "typescript": "^4.3.4"
   }
 }

@@ -4,8 +4,17 @@ import { InputType, Field, Float } from "type-graphql";
 export class EntradaDeProduto {
 
   @Field({ nullable: false })
+  contaId: string;
+
+  @Field({ nullable: true })
+  categoriaId?: string;
+
+  @Field()
   nome: string;
 
-  @Field(() => Float)
-  preco: number;
+  @Field({ nullable: true })
+  descricao?: string;
+
+  @Field(() => Float, { nullable: true })
+  preco?: number;
 }

@@ -1,0 +1,3 @@
+mutation Logar($autenticacao: Autenticacao!) {
+  entrar(autenticacao: $autenticacao)
+}

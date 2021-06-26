@@ -1,0 +1,11 @@
+query BuscarCardapio($idRestaurante: String!) {
+  loja(id: $idRestaurante) {
+    nome
+    podeEditar
+    banner
+    logo
+    categorias {
+      ...CategoriaDoCardapio
+    }
+  }
+}

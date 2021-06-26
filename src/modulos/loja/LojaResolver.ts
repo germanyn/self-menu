@@ -1,18 +1,22 @@
-import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver } from "type-graphql"
+import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver, Ctx } from "type-graphql"
 import { Loja } from "./Loja";
 import { EntradaDeLoja } from "./EntradaDeLoja";
 import { ContaModel, LojaModel } from "../models";
+import { Context } from "infraestrutura/context";
+import { Types } from "mongoose";
 
 @Resolver(() => Loja)
 export class LojaResolver implements ResolverInterface<Loja> {
     @Query(() => [Loja])
-    lojas() {
-        return LojaModel.find();
+    async lojas() {
+        return LojaModel.find().lean();
     }
 
     @Query(() => Loja)
-    loja(@Arg("id") id: string) {
-        return LojaModel.findById(id);
+    async loja(@Arg("id") id: string) {
+        const loja = await LojaModel.findById(id).lean();
+        if (!loja) throw new Error('Loja não encontrada')
+        return loja
     }
 
     @Authorized()
@@ -30,8 +34,34 @@ export class LojaResolver implements ResolverInterface<Loja> {
 
     @FieldResolver()
     async conta(@Root() loja: Loja) {
-      const conta = await ContaModel.findOne(loja.conta)
-      if (!conta) throw new Error('Conta não encontrado')
-      return conta
+        const retorno = await LojaModel.populate(loja, {
+            path: 'conta',
+            options: {
+                lean: true,
+            },
+        })
+        return retorno.conta
+    }
+
+    @FieldResolver()
+    podeEditar(
+        @Ctx(){ user }: Context,
+        @Root() loja: Loja
+    ): boolean {
+        loja.editores.includes(Types.ObjectId(user?.iss))
+        return user
+            ? loja.editores.some(editor => editor && editor.toString() === user.iss)
+            : false
+    }
+
+    @FieldResolver()
+    async categorias(@Root() loja: Loja) {
+        const retorno = await LojaModel.populate(loja, {
+            path: 'categorias',
+            options: {
+                lean: true,
+            },
+        })
+        return retorno.categorias
     }
 }

@@ -6,10 +6,7 @@ export class EntradaDeConta {
   restaurante: string;
 
   @Field({ nullable: false })
-  nome: string;
-
-  @Field({ nullable: false })
-  login: string;
+  email: string;
 
   @Field({ nullable: false })
   senha: string;

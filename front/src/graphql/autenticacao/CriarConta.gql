@@ -1,0 +1,15 @@
+mutation CriarConta($entrada: EntradaDeConta!) {
+  criarConta(entrada: $entrada) {
+    token
+    conta {
+      _id
+      dono {
+        _id
+        nome
+      }
+      lojas {
+        _id
+      }
+    }
+  }
+}

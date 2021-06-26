@@ -1,0 +1,5 @@
+mutation CriarProduto($produto: EntradaDeProduto!) {
+  criarProduto(data: $produto) {
+    ...ProdutoDoCardapio
+  }
+}

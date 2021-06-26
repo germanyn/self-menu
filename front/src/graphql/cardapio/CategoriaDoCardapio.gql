@@ -1,0 +1,7 @@
+fragment CategoriaDoCardapio on Categoria {
+    _id
+    nome
+    produtos {
+        ...ProdutoDoCardapio
+    }
+}

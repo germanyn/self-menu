@@ -1,0 +1,7 @@
+fragment ProdutoDoCardapio on Produto {
+    _id
+    nome
+    preco
+    urlDoPrato
+    descricao
+}

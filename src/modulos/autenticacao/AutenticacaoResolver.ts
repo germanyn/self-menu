@@ -7,7 +7,9 @@ import { Autenticacao } from "./Autenticacao";
 export class AutenticacaoResolver {
 	@Mutation(() => String)
 	async entrar(@Arg("autenticacao") autenticacao: Autenticacao) {
-		const usuario = await UsuarioModel.findOne({ login: autenticacao.login })
+		const usuario = await UsuarioModel
+			.findOne({ login: autenticacao.login })
+			.select('+senha')
 		if (!usuario) throw new Error('Usuario não encontrado')
 
 		if (!comparePassword(autenticacao.senha, usuario.senha))
