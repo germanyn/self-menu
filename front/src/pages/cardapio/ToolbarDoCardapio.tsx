@@ -1,9 +1,11 @@
-import { AppBar, Box, IconButton, makeStyles, Menu, MenuItem, Toolbar } from '@material-ui/core';
+import { AppBar, Box, IconButton, makeStyles, Menu, MenuItem, Toolbar, Typography } from '@material-ui/core';
+import clsx from 'clsx';
+import DotsVertical from 'mdi-material-ui/DotsVertical';
+import IconeDeMenu from 'mdi-material-ui/Menu';
 import React from 'react';
-import BotaoDeVoltar from '../../components/BotaoDeVoltar';
 import { BuscarCardapioQuery, BuscarCardapioQueryHookResult } from '../../generated/graphql';
 import { useToolbarStyles } from '../../layouts/AppToolbar';
-import DotsVertical from 'mdi-material-ui/DotsVertical'
+import { ToolbarParams } from '../../layouts/Principal';
 
 const useStyles = makeStyles((theme) => ({
     banner: {
@@ -21,6 +23,8 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
     podeEditar,
     mostraEdicao,
     setMostraEdicao,
+    menuAberto,
+    setMenuAberto,
 }) => {
     const classes = useStyles()
     const toolbarClasses = useToolbarStyles()
@@ -49,14 +53,33 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                 ? { backgroundImage: `url("${banner}")` }
                 : {}
             }
-            className={classes.banner}
+            className={clsx(
+                toolbarClasses.appBar,
+                menuAberto && toolbarClasses.appBarShift,
+                classes.banner
+            )}
         >
             <Toolbar className={toolbarClasses.toolbar}>
-                <BotaoDeVoltar
-                    style={{
-                        background: 'rgba(0, 0, 0, 0.1)'
-                    }}
-                />
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    aria-label="open drawer"
+                    onClick={() => setMenuAberto && setMenuAberto(!menuAberto)}
+                    style={banner ? { background: 'rgba(0, 0, 0, 0.1)' } : undefined}
+                >
+                    <IconeDeMenu />
+                </IconButton>
+                {!banner && (
+                    <Typography
+                        component="h1"
+                        variant="h6"
+                        color="inherit"
+                        noWrap
+                        style={{ paddingLeft: '12px' }}
+                    >
+                        Cardápio
+                    </Typography>
+                )}
                 <Box flexGrow={1} />
                 {podeEditar && <IconButton
                     edge="end"
@@ -96,11 +119,11 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
     )
 }
 
-type PropTypes = {
+type PropTypes = BuscarCardapioQueryHookResult & ToolbarParams & {
     data?: BuscarCardapioQuery
     mostraEdicao?: boolean
     setMostraEdicao?: (mostra: boolean) => void
     podeEditar: boolean
-} & BuscarCardapioQueryHookResult
+}
 
 export default ToolbarDoCardapio

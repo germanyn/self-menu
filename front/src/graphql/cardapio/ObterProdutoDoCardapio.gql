@@ -1,0 +1,5 @@
+query ObterProdutoDoCardapio($id: String!) {
+  produto(id: $id) {
+    ...ProdutoDoCardapio
+  }
+}

@@ -1,3 +1,5 @@
 mutation Logar($autenticacao: Autenticacao!) {
-  entrar(autenticacao: $autenticacao)
+  entrar(autenticacao: $autenticacao) {
+    ...Login
+  }
 }

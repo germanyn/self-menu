@@ -1,12 +1,12 @@
-import React from 'react';
-import { makeStyles, useMediaQuery, useTheme } from '@material-ui/core';
+import { ListItem, ListItemIcon, makeStyles, useMediaQuery, useTheme } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
 import clsx from 'clsx';
+import { HelpCircleOutline, LoginVariant, LogoutVariant } from 'mdi-material-ui';
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useAutenticacao } from '../contexts/autenticacao';
 import { drawerWidth } from './constantes';
-import { mainListItems } from './listItems';
 
 const useStyles = makeStyles((theme) => ({
     toolbarIcon: {
@@ -14,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
       alignItems: 'center',
       justifyContent: 'flex-end',
       padding: '0 8px',
-      ...theme.mixins.toolbar,
+      // ...theme.mixins.toolbar,
     },
     title: {
       flexGrow: 1,
@@ -34,20 +34,14 @@ const useStyles = makeStyles((theme) => ({
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
-      width: theme.spacing(7),
-      [theme.breakpoints.up('sm')]: {
-        width: theme.spacing(9),
-      },
+      width: 0,
     },
-    paper: {
-      padding: theme.spacing(2),
-      display: 'flex',
-      overflow: 'auto',
-      flexDirection: 'column',
-    },
-    fixedHeight: {
-      height: 240,
-    },
+    // paper: {
+    //   padding: theme.spacing(2),
+    //   display: 'flex',
+    //   overflow: 'auto',
+    //   flexDirection: 'column',
+    // },
   }));
 
 
@@ -58,6 +52,7 @@ export default function AppDrawer({
   const classes = useStyles();
   const { breakpoints } = useTheme()
   const éMobile = useMediaQuery(breakpoints.only('xs'))
+  const { logado, deslogar } = useAutenticacao()
 
   return (
     <Drawer
@@ -66,25 +61,51 @@ export default function AppDrawer({
         paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
       }}
       open={open}
-      anchor={"left"}
-      {...{
-        onBackdropClick: () => setOpen(false)
-      }}
+      onBackdropClick={() => setOpen(false)}
     >
       <div className={classes.toolbarIcon}>
-        <Typography
-          component="h1"
-          variant="h6"
-          color="inherit"
-          noWrap
-          className={classes.title}
-          align="center"
-        >
-          Gardápio
-        </Typography>
+        <img
+          src={`${process.env.PUBLIC_URL}/img/logo2.jpeg`}
+          width="100%"
+          alt="Logo do aplicativo"
+        />
       </div>
-      <Divider />
-      <List>{mainListItems}</List>
+      <Divider/>
+      <Divider style={{ marginTop: 'auto' }} />
+      <ListItem
+        button
+      >
+        <ListItemIcon>
+          <HelpCircleOutline/>
+        </ListItemIcon>
+        Sobre
+      </ListItem>
+      {logado
+        ? (
+          <ListItem
+            button
+            onClick={deslogar}
+          >
+            <ListItemIcon>
+              <LogoutVariant/>
+            </ListItemIcon>
+            Sair
+          </ListItem>
+        )
+        : (
+          <>
+            <ListItem
+              button
+              component={Link}
+              to="/entrar"
+            >
+              <ListItemIcon>
+                <LoginVariant/>
+              </ListItemIcon>
+              Entrar
+            </ListItem>
+          </>
+        )}
     </Drawer>
   )
 }

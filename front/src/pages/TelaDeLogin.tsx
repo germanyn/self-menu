@@ -1,16 +1,20 @@
+import { InputAdornment, IconButton } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Formik } from 'formik';
+import { Form, Formik } from 'formik';
+import { Eye, EyeOff } from 'mdi-material-ui';
+import { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useAutenticacao } from '../contexts/autenticacao';
-import { useCriarContaMutation } from '../generated/graphql';
+import { useLogarMutation } from '../generated/graphql';
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -35,8 +39,10 @@ const useStyles = makeStyles((theme) => ({
 export default function TelaDeLogin() {
     const classes = useStyles();
 
-    const [ registrarConta ] = useCriarContaMutation()
+    const [ logar ] = useLogarMutation()
     const { setRegistro } = useAutenticacao()
+    const history = useHistory()
+    const [mostraSenha, setMostraSenha] = useState(false)
 
     return (
         <Container component="main" maxWidth="xs">
@@ -71,11 +77,10 @@ export default function TelaDeLogin() {
                     onSubmit={async (valores, { setSubmitting }) => {
                         try {
                             setSubmitting(true)
-                            const { data, errors } = await registrarConta({
+                            const { data, errors } = await logar({
                                 variables: {
-                                    entrada: {
+                                    autenticacao: {
                                         email: valores.email,
-                                        restaurante: valores.restaurante,
                                         senha: valores.senha,
                                     },
                                 },
@@ -83,14 +88,9 @@ export default function TelaDeLogin() {
                             if (!data || errors) {
                                 throw errors
                             }
-                            setRegistro({
-                                token: data.criarConta.token,
-                                usuario: {
-                                    conta: data.criarConta.conta._id,
-                                    id: data.criarConta.conta.dono._id,
-                                    nome: data.criarConta.conta.dono.nome,
-                                },
-                            })
+                            setRegistro(data.entrar)
+                            const conta = data.entrar.usuario.contas[0]
+                            history.push(`/${conta.lojas[0]._id}`)
                         } catch (error) {
                             alert(error)
                         } finally {
@@ -108,28 +108,12 @@ export default function TelaDeLogin() {
                         isSubmitting,
                         /* and other goodies */
                     }) => (
-                        <form
+                        <Form
                             className={classes.form}
                             noValidate
                             onSubmit={handleSubmit}
                         >
                             <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        autoComplete="restaurante"
-                                        name="restaurante"
-                                        variant="outlined"
-                                        required
-                                        fullWidth
-                                        id="nome"
-                                        label="Restaurante"
-                                        autoFocus
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        value={values.restaurante}
-                                        disabled={isSubmitting}
-                                    />
-                                </Grid>
                                 <Grid item xs={12}>
                                     <TextField
                                         variant="outlined"
@@ -140,6 +124,11 @@ export default function TelaDeLogin() {
                                         name="email"
                                         autoComplete="email"
                                         disabled={isSubmitting}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.email}
+                                        error={touched.email && Boolean(errors.email)}
+                                        helperText={touched.email && errors.email}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -149,10 +138,31 @@ export default function TelaDeLogin() {
                                         fullWidth
                                         name="senha"
                                         label="Senha"
-                                        type="senha"
+                                        type={mostraSenha ? "text" : "password"}
                                         id="senha"
                                         autoComplete="current-password"
                                         disabled={isSubmitting}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        value={values.senha}
+                                        error={touched.senha && Boolean(errors.senha)}
+                                        helperText={touched.senha && errors.senha}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => setMostraSenha(!mostraSenha)}
+                                                        onMouseDown={(event: React.MouseEvent<HTMLButtonElement>) => {
+                                                            event.preventDefault();
+                                                        }}
+                                                        edge="end"
+                                                    >
+                                                        {mostraSenha ? <Eye /> : <EyeOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
                                     />
                                 </Grid>
                             </Grid>
@@ -164,16 +174,16 @@ export default function TelaDeLogin() {
                                 className={classes.submit}
                                 disabled={isSubmitting}
                             >
-                                Registrar
+                                Entrar
                             </Button>
                             <Grid container justify="flex-end">
                                 <Grid item>
-                                    <Link href="#" variant="body2">
-                                        Já tem uma conta? Entre aqui
+                                    <Link to="/registrar">
+                                        Não possui uma conta? Cadastre aqui
                                     </Link>
                                 </Grid>
                             </Grid>
-                        </form>
+                        </Form>
                     )}
                 </Formik>
             </div>

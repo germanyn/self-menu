@@ -1,19 +1,20 @@
-import { FormControlLabel, Switch } from '@material-ui/core';
+import { IconButton, InputAdornment } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Form, Formik } from 'formik';
-import React from 'react';
+import { Eye, EyeOff } from 'mdi-material-ui';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useAutenticacao } from '../contexts/autenticacao';
-import { useCriarContaMutation } from '../generated/graphql';
+import { useRegistrarMutation } from '../generated/graphql';
+import { Link } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
     paper: {
@@ -38,9 +39,10 @@ const useStyles = makeStyles((theme) => ({
 export default function TelaDeRegistrar() {
     const classes = useStyles();
 
-    const [criarConta] = useCriarContaMutation()
+    const [registrar] = useRegistrarMutation()
     const { setRegistro } = useAutenticacao()
-    const history = useHistory();
+    const history = useHistory()
+    const [mostraSenha, setMostraSenha] = useState(false)
 
     return (
         <Container component="main" maxWidth="xs">
@@ -59,6 +61,7 @@ export default function TelaDeRegistrar() {
                         email: '',
                         senha: '',
                         comDemonstracao: true,
+                        mostraSenha: false,
                     }}
                     validate={values => {
                         const errors: {
@@ -76,7 +79,7 @@ export default function TelaDeRegistrar() {
                     onSubmit={async (valores, { setSubmitting }) => {
                         try {
                             setSubmitting(true)
-                            const { data, errors } = await criarConta({
+                            const { data, errors } = await registrar({
                                 variables: {
                                     entrada: {
                                         email: valores.email,
@@ -88,16 +91,9 @@ export default function TelaDeRegistrar() {
                             if (!data || errors) {
                                 throw errors
                             }
-                            const contaCriada = data.criarConta.conta
-                            setRegistro({
-                                token: data.criarConta.token,
-                                usuario: {
-                                    conta: contaCriada._id,
-                                    id: contaCriada.dono._id,
-                                    nome: contaCriada.dono.nome,
-                                },
-                            })
-                            history.push(`/${contaCriada.lojas[0]._id}`)
+                            setRegistro(data.registrar)
+                            const conta = data.registrar.usuario.contas[0]
+                            history.push(`/${conta.lojas[0]._id}`)
                         } catch (error) {
                             alert(error)
                         } finally {
@@ -133,6 +129,8 @@ export default function TelaDeRegistrar() {
                                         onBlur={handleBlur}
                                         value={values.restaurante}
                                         disabled={isSubmitting}
+                                        error={touched.restaurante && Boolean(errors.restaurante)}
+                                        helperText={touched.restaurante && errors.restaurante}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -147,6 +145,8 @@ export default function TelaDeRegistrar() {
                                         onBlur={handleBlur}
                                         value={values.email}
                                         disabled={isSubmitting}
+                                        error={touched.email && Boolean(errors.email)}
+                                        helperText={touched.email && errors.email}
                                     />
                                 </Grid>
                                 <Grid item xs={12}>
@@ -156,25 +156,30 @@ export default function TelaDeRegistrar() {
                                         fullWidth
                                         name="senha"
                                         label="Senha"
-                                        type="password"
+                                        type={mostraSenha ? "text" : "password"}
                                         autoComplete="current-password"
                                         onChange={handleChange}
                                         onBlur={handleBlur}
                                         value={values.senha}
                                         disabled={isSubmitting}
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                name="comDemonstracao"
-                                                onChange={handleChange}
-                                                onBlur={handleBlur}
-                                                checked={values.comDemonstracao}
-                                                disabled={isSubmitting}
-                                            />}
-                                        label="Com dados de demonstração"
+                                        error={touched.senha && Boolean(errors.senha)}
+                                        helperText={touched.senha && errors.senha}
+                                        InputProps={{
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <IconButton
+                                                        aria-label="toggle password visibility"
+                                                        onClick={() => setMostraSenha(!mostraSenha)}
+                                                        onMouseDown={(event: React.MouseEvent<HTMLButtonElement>) => {
+                                                            event.preventDefault();
+                                                        }}
+                                                        edge="end"
+                                                    >
+                                                        {mostraSenha ? <Eye /> : <EyeOff />}
+                                                    </IconButton>
+                                                </InputAdornment>
+                                            )
+                                        }}
                                     />
                                 </Grid>
                             </Grid>
@@ -188,10 +193,9 @@ export default function TelaDeRegistrar() {
                             >
                                 Registrar
                             </Button>
-                            {JSON.stringify(errors)}
                             <Grid container justify="flex-end">
                                 <Grid item>
-                                    <Link href="#" variant="body2">
+                                    <Link to="/entrar">
                                         Já tem uma conta? Entre aqui
                                     </Link>
                                 </Grid>

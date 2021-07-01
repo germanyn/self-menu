@@ -1,10 +1,14 @@
-import { mongoose } from "@typegoose/typegoose"
-import { Resolver, Query, Mutation, Arg, Root, FieldResolver, ResolverInterface, Field } from "type-graphql"
-import { gerarToken, hashPassword } from "../../infraestrutura/autenticacao"
-import { ContaModel, LojaModel, UsuarioModel } from "../models"
+import {
+  Arg,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  ResolverInterface,
+  Root,
+} from "type-graphql"
+import { ContaModel } from "../models"
 import { Conta } from "./Conta"
-import { EntradaDeConta } from "./EntradaDeConta"
-import { RegistroDeConta } from "./RegistroDeConta"
 
 @Resolver(() => Conta)
 export class ContaResolver implements ResolverInterface<Conta> {
@@ -16,38 +20,6 @@ export class ContaResolver implements ResolverInterface<Conta> {
   @Query(() => Conta)
   conta(@Arg("id") id: string) {
     return ContaModel.findById(id).lean()
-  }
-
-  @Mutation(() => RegistroDeConta)
-  async criarConta(@Arg("entrada") entrada: EntradaDeConta): Promise<RegistroDeConta> {
-    const dono = await UsuarioModel.create({
-      nome: entrada.restaurante,
-      login: entrada.email,
-      email: entrada.email,
-      senha: hashPassword(entrada.senha),
-    })
-    const conta = await ContaModel.create({
-      nome: entrada.restaurante,
-      usuarios: [],
-      lojas: [],
-      dono,
-    })
-    dono.contas.push(conta._id)
-    await dono.save()
-    const loja = await LojaModel.create({
-      nome: entrada.restaurante,
-      conta: [conta._id],
-      editores: [dono._id],
-    })
-
-    conta.lojas.push(loja._id)
-    conta.dono = dono._id
-    await conta.save()
-
-    return {
-      conta: conta.toObject<Conta>(),
-      token: gerarToken(dono),
-    }
   }
 
   @Mutation(() => Boolean)

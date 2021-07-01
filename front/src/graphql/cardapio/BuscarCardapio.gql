@@ -1,6 +1,6 @@
 query BuscarCardapio($idRestaurante: String!) {
   loja(id: $idRestaurante) {
-    nome
+    ...LojaDoCardapio
     podeEditar
     banner
     logo

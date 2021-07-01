@@ -1,5 +1,5 @@
-import { prop, modelOptions, Ref } from "@typegoose/typegoose";
-import { ObjectId, Types } from "mongoose";
+import { prop, Ref } from "@typegoose/typegoose";
+import { Types } from "mongoose";
 import { Field, ID, ObjectType } from "type-graphql";
 import { Conta } from "../conta/Conta";
 
@@ -8,21 +8,17 @@ export class Usuario {
   @Field(() => ID)
   _id: Types.ObjectId
 
-  @Field(() => String)
-  @prop({
-    required: true,
-  })
+  @Field()
+  @prop({ required: true })
   nome: string;
 
-  @Field(() => String)
-  @prop({
-    required: true,
-  })
-  login: string;
-
-  @Field(() => String)
+  @Field({ nullable: true })
   @prop()
-  email: string;
+  login?: string;
+
+  @Field({ nullable: true })
+  @prop({ unique: true })
+  email?: string;
 
   @prop({
     select: false,
@@ -31,8 +27,6 @@ export class Usuario {
   senha: string;
 
   @Field(() => Conta)
-  @prop({
-    ref: () => Conta,
-  })
+  @prop({ ref: () => Conta })
   contas: Ref<Conta>[]
 }

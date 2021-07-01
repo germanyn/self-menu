@@ -7,50 +7,50 @@ import { drawerWidth } from './constantes';
 
 export const useToolbarStyles = makeStyles((theme) => ({
     toolbar: {
-      // paddingRight: 12, // keep right padding when drawer closed
+      paddingRight: 12, // keep right padding when drawer closed
     },
     leftButton: {
       marginRight: 36,
+    },
+    appBar: {
+      zIndex: theme.zIndex.drawer + 1,
+      transition: theme.transitions.create(['width', 'margin'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+      }),
+    },
+    appBarShift: {
+      marginLeft: drawerWidth,
+      [theme.breakpoints.up('sm')]: {
+        width: `calc(100% - ${drawerWidth}px)`,
+      },
+      transition: theme.transitions.create(['width', 'margin'], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
     },
   })
 );
 
 const useStyles = makeStyles((theme) => ({
-  appBar: {
-    zIndex: theme.zIndex.drawer + 1,
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen,
-    }),
-  },
-  appBarShift: {
-    marginLeft: drawerWidth,
-    [theme.breakpoints.up('sm')]: {
-      width: `calc(100% - ${drawerWidth}px)`,
-    },
-    transition: theme.transitions.create(['width', 'margin'], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  },
   title: {
     flexGrow: 1,
   },
 }));
 
 function AppToolbar({
-    setOpen,
-    open,
+    setMenuAberto,
+    menuAberto,
 }: React.PropsWithChildren<ToolbarPropTypes>) {
     const classes = useStyles();
     const toolbarClasses = useToolbarStyles();
     const toggleDrawer = () => {
-      setOpen(!open);
+      setMenuAberto(!menuAberto);
     };
     return (
         <AppBar
           position="absolute"
-          className={clsx(classes.appBar, open && classes.appBarShift)}
+          className={clsx(toolbarClasses.appBar, menuAberto && toolbarClasses.appBarShift)}
         >
           <Toolbar className={toolbarClasses.toolbar}>
               <IconButton
@@ -74,8 +74,8 @@ function AppToolbar({
 }
 
 export type ToolbarPropTypes = {
-    open: boolean
-    setOpen: (open: boolean) => void
+    menuAberto: boolean
+    setMenuAberto: (aberto: boolean) => void
 }
 
 export default AppToolbar

@@ -2,9 +2,9 @@ import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class Autenticacao {
-  @Field(() => String)
-  login: string;
+  @Field()
+  email: string;
 
-  @Field(() => String)
+  @Field()
   senha: string;
 }

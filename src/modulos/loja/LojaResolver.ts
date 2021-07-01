@@ -4,6 +4,7 @@ import { EntradaDeLoja } from "./EntradaDeLoja";
 import { ContaModel, LojaModel } from "../models";
 import { Context } from "infraestrutura/context";
 import { Types } from "mongoose";
+import { EdicaoDeLoja } from "./EdicaoDeLoja";
 
 @Resolver(() => Loja)
 export class LojaResolver implements ResolverInterface<Loja> {
@@ -23,6 +24,18 @@ export class LojaResolver implements ResolverInterface<Loja> {
     @Mutation(() => Loja)
     async criarLoja(@Arg("data") entrada: EntradaDeLoja) {
         return LojaModel.create(entrada)
+    }
+
+    @Authorized()
+    @Mutation(() => Loja)
+    async editarLoja(
+        @Arg("id") id: string,
+        @Arg("loja") entrada: EdicaoDeLoja,
+    ) {
+        const loja = await LojaModel.findById(id);
+        if (!loja) throw new Error('Loja não encontrada')
+        if (entrada.nome) loja.nome = entrada.nome
+        return (await loja.save()).toObject<Loja>()
     }
 
     @Authorized()

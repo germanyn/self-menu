@@ -19,8 +19,8 @@ const BotaoDeVoltar: typeof IconButton = (props: any) => {
             aria-label="open drawer"
             onClick={() => history.goBack()}
             className={clsx(classes.menuButton)}
-            {...props}
             size="small"
+            {...props}
         >
             <ChevronLeft
                 fontSize="large"

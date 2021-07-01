@@ -1,9 +1,9 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@material-ui/core';
 import { Form, Formik, FormikProps } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { BuscarCardapioDocument, BuscarCardapioQuery, useCriarCategoriaMutation } from '../../generated/graphql';
-import { usePrevious } from '../../utils';
-import { ArrayElement } from '../../utils/types';
+import { BuscarCardapioDocument, BuscarCardapioQuery, useCriarCategoriaMutation } from '../../../generated/graphql';
+import { usePrevious } from '../../../utils';
+import { ArrayElement } from '../../../utils/types';
 
 const DialogoDeEditarCategoria: React.FC<EditarProps> = ({
     id,
@@ -125,7 +125,7 @@ const DialogoDeEditarCategoria: React.FC<EditarProps> = ({
                             value={values.nome}
                             disabled={isSubmitting}
                             error={touched.nome && Boolean(errors.nome)}
-                            helperText={touched.nome && errors.nome || undefined}
+                            helperText={(touched.nome && errors.nome) || undefined}
                         />
                     </DialogContent>
                     <DialogActions>

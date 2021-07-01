@@ -1,0 +1,4 @@
+fragment LojaDoCardapio on Loja {
+    _id
+    nome
+}

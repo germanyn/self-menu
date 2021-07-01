@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { LoginFragment } from '../generated/graphql';
 
 export type Registro = {
     usuario: UsuarioLogado
@@ -17,7 +18,7 @@ interface AutenticacaoContextData {
     setUsuario: (usuario: UsuarioLogado | null) => void
     token: string | null
     setToken: (token: string | null) => void
-    setRegistro: (registro: Registro) => void
+    setRegistro: (registro: LoginFragment) => void
     deslogar: () => void
 }
 
@@ -30,9 +31,13 @@ export const AutenticacaoProvider: React.FC = ({ children }) => {
     const [ usuario, setUsuario ] = useState<UsuarioLogado | null>(null);
     const [ token, setToken ] = useState<string | null>(null);
     const logado = !!token
-    const setRegistro = (registro: Registro) => {
+    const setRegistro = (registro: LoginFragment) => {
         localStorage.setItem(APP_USER, JSON.stringify(registro.usuario));
-        setUsuario(registro.usuario)
+        setUsuario({
+            conta: registro.usuario.contas[0]._id,
+            id: registro.usuario._id,
+            nome: registro.usuario.nome,
+        })
         localStorage.setItem(APP_TOKEN, registro.token);
         setToken(registro.token)
     }

@@ -1,23 +1,25 @@
 import {
+    Container,
     Fab,
     makeStyles,
     useTheme
 } from '@material-ui/core';
 import { Plus } from 'mdi-material-ui';
-import React, { useState } from 'react';
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useHistory, useLocation, useParams } from "react-router-dom";
 import { useBuscarCardapioQuery } from "../../generated/graphql";
 import Principal from "../../layouts/Principal";
-import BottomNavDeCategorias from './BottomNavDeCategorias';
 import Cardapio from './Cardápio';
+import DialogoDeEditarCategoria from './categoria/DialogoDeEditarCategoria';
+import { useCardapio, withCardapio } from './context/CardapioContext';
+import DetalhesDoProduto from './produto/DetalhesDoProduto';
 import ToolbarDoCardapio from "./ToolbarDoCardapio";
 
 const useStyles = makeStyles((theme) => {
-    console.log(theme)
     return {
         fab: {
             position: 'fixed',
-            bottom: `calc(${theme.spacing(2)}px)`,
+            bottom: theme.spacing(2),
             right: theme.spacing(2),
             zIndex: theme.zIndex.appBar + 50,
         }
@@ -28,6 +30,17 @@ function TelaDeCardapio() {
     const theme = useTheme()
     const classes = useStyles()
     const { idRestaurante } = useParams<{ idRestaurante: string }>()
+    const location = useLocation()
+    const history = useHistory()
+    const produtoDaQuery = new URLSearchParams(location.search).get('produto')
+    const {
+        setCategoriaId,
+        mostraCriarCategoria,
+        setMostraCriarCategoria,
+    } = useCardapio()
+    const produto = typeof produtoDaQuery === 'string'
+        ? produtoDaQuery
+        : undefined
 
     const buscaDeCardapio = useBuscarCardapioQuery({
         variables: { idRestaurante },
@@ -36,20 +49,23 @@ function TelaDeCardapio() {
     const { data } = buscaDeCardapio
 
     const [mostraEdicao, setMostraEdicao] = useState(false)
-    const [tabAtual, setTabAtual] = React.useState<string | null>(null);
     const podeEditar = data
         ? data.loja.podeEditar
         : false
 
-    const trocarModoEdicao = () => {
-        setMostraEdicao && setMostraEdicao(!mostraEdicao)
-    }
+    useEffect(() => {
+        setMostraEdicao(podeEditar)
+    }, [podeEditar])
 
-    return <React.Fragment>
+    useEffect(() => {
+        setCategoriaId(data?.loja.categorias[0]?._id|| null)
+    }, [data, setCategoriaId])
 
+    return <>
         <Principal
-            toolbar={() =>
+            toolbar={(props) =>
                 <ToolbarDoCardapio
+                    {...props}
                     podeEditar={podeEditar}
                     mostraEdicao={mostraEdicao}
                     setMostraEdicao={setMostraEdicao}
@@ -58,27 +74,44 @@ function TelaDeCardapio() {
             }
             style={{ marginBottom: theme.mixins.toolbar.minHeight }}
         >
-            <Cardapio
-                idRestaurante={idRestaurante}
-                mostraEdicao={mostraEdicao}
-                {...buscaDeCardapio}
-            />
+            <Container maxWidth="sm" disableGutters>
+                <Cardapio
+                    idRestaurante={idRestaurante}
+                    mostraEdicao={mostraEdicao}
+                    {...buscaDeCardapio}
+                />
+            </Container>
         </Principal>
-        <BottomNavDeCategorias
+        {/* <BottomNavDeCategorias
             mostraEdicao={mostraEdicao}
-            tabAtual={tabAtual}
-            setTabAtual={setTabAtual}
+            tabAtual={categoriaId}
+            setTabAtual={(categoriaId) => {
+                setCategoriaId(categoriaId)
+                setScrollTo(categoriaId)
+            }}
             {...buscaDeCardapio}
-        />
+        /> */}
         {mostraEdicao && <Fab
             color="primary"
-            aria-label="Habilitar edição"
-            // onClick={trocarModoEdicao}
+            aria-label="Adicionar"
+            onClick={() => setMostraCriarCategoria(true)}
             className={classes.fab}
         >
             <Plus/>
         </Fab>}
-    </React.Fragment>
+        {produto && <DetalhesDoProduto
+            id={produto}
+            aberto={!!produto}
+            onFechar={() => history.push(history.location.pathname)}
+            mostraEdicao={mostraEdicao}
+        />}
+        <DialogoDeEditarCategoria
+            aberto={mostraCriarCategoria}
+            lojaId={idRestaurante}
+            onFechar={() => setMostraCriarCategoria(false)}
+            onFinalizar={() => setMostraCriarCategoria(false)}
+        />
+    </>
 }
 
-export default TelaDeCardapio
+export default  withCardapio(TelaDeCardapio)

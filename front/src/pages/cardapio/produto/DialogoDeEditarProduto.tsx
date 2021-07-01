@@ -1,9 +1,17 @@
 import { Button, createStyles, Dialog, DialogActions, DialogContent, DialogTitle, makeStyles, TextField, Theme } from '@material-ui/core';
 import { Formik, FormikProps, Form } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { useAutenticacao } from '../../contexts/autenticacao';
-import { CategoriaDoCardapioFragment, CategoriaDoCardapioFragmentDoc, EntradaDeProduto, ProdutoDoCardapioFragment, ProdutoDoCardapioFragmentDoc, useCriarProdutoMutation, useEditarProdutoMutation } from '../../generated/graphql';
-import { usePrevious } from '../../utils';
+import { useAutenticacao } from '../../../contexts/autenticacao';
+import {
+    CategoriaDoCardapioFragment,
+    CategoriaDoCardapioFragmentDoc,
+    EntradaDeProduto,
+    ProdutoDoCardapioFragment,
+    ProdutoDoCardapioFragmentDoc,
+    useCriarProdutoMutation,
+    useEditarProdutoMutation,
+} from '../../../generated/graphql';
+import { usePrevious } from '../../../utils';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -170,7 +178,6 @@ const DialogoDeEditarProduto: React.FC<EditarProps> = ({
                         <TextField
                             autoComplete="off"
                             name="preco"
-                            required
                             fullWidth
                             label="Preço"
                             type="number"
@@ -178,16 +185,13 @@ const DialogoDeEditarProduto: React.FC<EditarProps> = ({
                             onBlur={handleBlur}
                             value={values.preco}
                             disabled={isSubmitting}
-                            inputProps={{
-                                step: 0.01
-                            }}
                             error={touched.preco && Boolean(errors.preco)}
                             helperText={touched.preco && errors.preco}
+                            inputProps={{ step: 0.01 }}
                         />
                         <TextField
                             autoComplete="off"
                             name="descricao"
-                            required
                             fullWidth
                             label="Descrição"
                             onChange={handleChange}

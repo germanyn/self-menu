@@ -1,0 +1,8 @@
+mutation EditarLoja(
+  $id: String!
+  $loja: EdicaoDeLoja!
+) {
+  editarLoja(id: $id, loja: $loja) {
+    ...LojaDoCardapio
+  }
+}

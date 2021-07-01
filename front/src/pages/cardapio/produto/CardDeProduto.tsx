@@ -4,11 +4,13 @@ import {
   CardActionArea,
   CardContent,
   CardMedia,
+  Divider,
   Typography
 } from "@material-ui/core";
 import { useState } from "react";
-import { useAutenticacao } from "../../contexts/autenticacao";
-import { ProdutoDoCardapioFragment } from "../../generated/graphql";
+import { useHistory } from "react-router-dom";
+import { useAutenticacao } from "../../../contexts/autenticacao";
+import { ProdutoDoCardapioFragment } from "../../../generated/graphql";
 import DialogoDeEditarProduto from "./DialogoDeEditarProduto";
 
 type Props = {
@@ -22,6 +24,7 @@ const CardDeProduto: React.FC<Props> = ({
 }) => {
   const { usuario } = useAutenticacao() 
   const [mostraEdicaoDeProduto, setMostraEdicaoDeProduto] = useState(false)
+  const history = useHistory()
   return <>
     <Card
       elevation={0}
@@ -31,7 +34,10 @@ const CardDeProduto: React.FC<Props> = ({
       }}
     >
       <CardActionArea
-        onClick={mostraEdicao ? () => setMostraEdicaoDeProduto(true) : undefined}
+        onClick={mostraEdicao
+          ? () => setMostraEdicaoDeProduto(true)
+          : () => history.push(`${history.location.pathname}?produto=${produto._id}`)
+        }
         style={{
           display: 'flex',
           minHeight: '147px',
@@ -64,7 +70,6 @@ const CardDeProduto: React.FC<Props> = ({
                 style={{
                   fontSize: '0.75rem',
                   lineHeight: '1rem',
-                  fontWeight: 'lighter',
                   overflow: 'hidden',
                   display: '-webkit-box',
                   WebkitLineClamp: 2,
@@ -98,6 +103,7 @@ const CardDeProduto: React.FC<Props> = ({
         </CardContent>
       </CardActionArea>
     </Card>
+    <Divider variant="middle"/>
     {usuario && <DialogoDeEditarProduto
       idConta={usuario.conta}
       aberto={mostraEdicaoDeProduto}

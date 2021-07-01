@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
+import { FieldPolicy, FieldReadFunction, TypePolicies, TypePolicy } from '@apollo/client/cache';
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
@@ -15,7 +16,7 @@ export type Scalars = {
 };
 
 export type Autenticacao = {
-  login: Scalars['String'];
+  email: Scalars['String'];
   senha: Scalars['String'];
 };
 
@@ -33,6 +34,10 @@ export type Conta = {
   nome: Scalars['String'];
   dono: Usuario;
   lojas: Array<Loja>;
+};
+
+export type EdicaoDeLoja = {
+  nome: Scalars['String'];
 };
 
 export type Endereco = {
@@ -95,10 +100,11 @@ export type Loja = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  entrar: Scalars['String'];
-  criarConta: RegistroDeConta;
+  registrar: RegistroDeConta;
+  entrar: RegistroDeConta;
   deleteConta: Scalars['Boolean'];
   criarLoja: Loja;
+  editarLoja: Loja;
   deletarLoja: Scalars['Boolean'];
   criarProduto: Produto;
   editarProduto: Produto;
@@ -107,13 +113,13 @@ export type Mutation = {
 };
 
 
-export type MutationEntrarArgs = {
-  autenticacao: Autenticacao;
+export type MutationRegistrarArgs = {
+  entrada: EntradaDeConta;
 };
 
 
-export type MutationCriarContaArgs = {
-  entrada: EntradaDeConta;
+export type MutationEntrarArgs = {
+  autenticacao: Autenticacao;
 };
 
 
@@ -124,6 +130,12 @@ export type MutationDeleteContaArgs = {
 
 export type MutationCriarLojaArgs = {
   data: EntradaDeLoja;
+};
+
+
+export type MutationEditarLojaArgs = {
+  loja: EdicaoDeLoja;
+  id: Scalars['String'];
 };
 
 
@@ -197,39 +209,28 @@ export type QueryUsuarioArgs = {
 export type RegistroDeConta = {
   __typename?: 'RegistroDeConta';
   token: Scalars['String'];
-  conta: Conta;
+  usuario: Usuario;
 };
 
 export type Usuario = {
   __typename?: 'Usuario';
   _id: Scalars['ID'];
   nome: Scalars['String'];
-  login: Scalars['String'];
-  email: Scalars['String'];
+  login?: Maybe<Scalars['String']>;
+  email?: Maybe<Scalars['String']>;
   contas: Array<Conta>;
 };
 
-export type CriarContaMutationVariables = Exact<{
+export type RegistrarMutationVariables = Exact<{
   entrada: EntradaDeConta;
 }>;
 
 
-export type CriarContaMutation = (
+export type RegistrarMutation = (
   { __typename?: 'Mutation' }
-  & { criarConta: (
+  & { registrar: (
     { __typename?: 'RegistroDeConta' }
-    & Pick<RegistroDeConta, 'token'>
-    & { conta: (
-      { __typename?: 'Conta' }
-      & Pick<Conta, '_id'>
-      & { dono: (
-        { __typename?: 'Usuario' }
-        & Pick<Usuario, '_id' | 'nome'>
-      ), lojas: Array<(
-        { __typename?: 'Loja' }
-        & Pick<Loja, '_id'>
-      )> }
-    ) }
+    & LoginFragment
   ) }
 );
 
@@ -240,7 +241,27 @@ export type LogarMutationVariables = Exact<{
 
 export type LogarMutation = (
   { __typename?: 'Mutation' }
-  & Pick<Mutation, 'entrar'>
+  & { entrar: (
+    { __typename?: 'RegistroDeConta' }
+    & LoginFragment
+  ) }
+);
+
+export type LoginFragment = (
+  { __typename?: 'RegistroDeConta' }
+  & Pick<RegistroDeConta, 'token'>
+  & { usuario: (
+    { __typename?: 'Usuario' }
+    & Pick<Usuario, '_id' | 'nome'>
+    & { contas: Array<(
+      { __typename?: 'Conta' }
+      & Pick<Conta, '_id' | 'nome'>
+      & { lojas: Array<(
+        { __typename?: 'Loja' }
+        & Pick<Loja, '_id'>
+      )> }
+    )> }
+  ) }
 );
 
 export type BuscarCardapioQueryVariables = Exact<{
@@ -252,11 +273,12 @@ export type BuscarCardapioQuery = (
   { __typename?: 'Query' }
   & { loja: (
     { __typename?: 'Loja' }
-    & Pick<Loja, 'nome' | 'podeEditar' | 'banner' | 'logo'>
+    & Pick<Loja, 'podeEditar' | 'banner' | 'logo'>
     & { categorias: Array<(
       { __typename?: 'Categoria' }
       & CategoriaDoCardapioFragment
     )> }
+    & LojaDoCardapioFragment
   ) }
 );
 
@@ -295,6 +317,20 @@ export type CriarProdutoMutation = (
   ) }
 );
 
+export type EditarLojaMutationVariables = Exact<{
+  id: Scalars['String'];
+  loja: EdicaoDeLoja;
+}>;
+
+
+export type EditarLojaMutation = (
+  { __typename?: 'Mutation' }
+  & { editarLoja: (
+    { __typename?: 'Loja' }
+    & LojaDoCardapioFragment
+  ) }
+);
+
 export type EditarProdutoMutationVariables = Exact<{
   id: Scalars['String'];
   produto: EntradaDeProduto;
@@ -304,6 +340,24 @@ export type EditarProdutoMutationVariables = Exact<{
 export type EditarProdutoMutation = (
   { __typename?: 'Mutation' }
   & { editarProduto: (
+    { __typename?: 'Produto' }
+    & ProdutoDoCardapioFragment
+  ) }
+);
+
+export type LojaDoCardapioFragment = (
+  { __typename?: 'Loja' }
+  & Pick<Loja, '_id' | 'nome'>
+);
+
+export type ObterProdutoDoCardapioQueryVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type ObterProdutoDoCardapioQuery = (
+  { __typename?: 'Query' }
+  & { produto: (
     { __typename?: 'Produto' }
     & ProdutoDoCardapioFragment
   ) }
@@ -324,6 +378,22 @@ export type RemoverCategoriaMutation = (
   & Pick<Mutation, 'deletarCategoria'>
 );
 
+export const LoginFragmentDoc = gql`
+    fragment Login on RegistroDeConta {
+  token
+  usuario {
+    _id
+    nome
+    contas {
+      _id
+      nome
+      lojas {
+        _id
+      }
+    }
+  }
+}
+    `;
 export const ProdutoDoCardapioFragmentDoc = gql`
     fragment ProdutoDoCardapio on Produto {
   _id
@@ -342,54 +412,52 @@ export const CategoriaDoCardapioFragmentDoc = gql`
   }
 }
     ${ProdutoDoCardapioFragmentDoc}`;
-export const CriarContaDocument = gql`
-    mutation CriarConta($entrada: EntradaDeConta!) {
-  criarConta(entrada: $entrada) {
-    token
-    conta {
-      _id
-      dono {
-        _id
-        nome
-      }
-      lojas {
-        _id
-      }
-    }
-  }
+export const LojaDoCardapioFragmentDoc = gql`
+    fragment LojaDoCardapio on Loja {
+  _id
+  nome
 }
     `;
-export type CriarContaMutationFn = Apollo.MutationFunction<CriarContaMutation, CriarContaMutationVariables>;
+export const RegistrarDocument = gql`
+    mutation Registrar($entrada: EntradaDeConta!) {
+  registrar(entrada: $entrada) {
+    ...Login
+  }
+}
+    ${LoginFragmentDoc}`;
+export type RegistrarMutationFn = Apollo.MutationFunction<RegistrarMutation, RegistrarMutationVariables>;
 
 /**
- * __useCriarContaMutation__
+ * __useRegistrarMutation__
  *
- * To run a mutation, you first call `useCriarContaMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCriarContaMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useRegistrarMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRegistrarMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [criarContaMutation, { data, loading, error }] = useCriarContaMutation({
+ * const [registrarMutation, { data, loading, error }] = useRegistrarMutation({
  *   variables: {
  *      entrada: // value for 'entrada'
  *   },
  * });
  */
-export function useCriarContaMutation(baseOptions?: Apollo.MutationHookOptions<CriarContaMutation, CriarContaMutationVariables>) {
+export function useRegistrarMutation(baseOptions?: Apollo.MutationHookOptions<RegistrarMutation, RegistrarMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CriarContaMutation, CriarContaMutationVariables>(CriarContaDocument, options);
+        return Apollo.useMutation<RegistrarMutation, RegistrarMutationVariables>(RegistrarDocument, options);
       }
-export type CriarContaMutationHookResult = ReturnType<typeof useCriarContaMutation>;
-export type CriarContaMutationResult = Apollo.MutationResult<CriarContaMutation>;
-export type CriarContaMutationOptions = Apollo.BaseMutationOptions<CriarContaMutation, CriarContaMutationVariables>;
+export type RegistrarMutationHookResult = ReturnType<typeof useRegistrarMutation>;
+export type RegistrarMutationResult = Apollo.MutationResult<RegistrarMutation>;
+export type RegistrarMutationOptions = Apollo.BaseMutationOptions<RegistrarMutation, RegistrarMutationVariables>;
 export const LogarDocument = gql`
     mutation Logar($autenticacao: Autenticacao!) {
-  entrar(autenticacao: $autenticacao)
+  entrar(autenticacao: $autenticacao) {
+    ...Login
+  }
 }
-    `;
+    ${LoginFragmentDoc}`;
 export type LogarMutationFn = Apollo.MutationFunction<LogarMutation, LogarMutationVariables>;
 
 /**
@@ -419,7 +487,7 @@ export type LogarMutationOptions = Apollo.BaseMutationOptions<LogarMutation, Log
 export const BuscarCardapioDocument = gql`
     query BuscarCardapio($idRestaurante: String!) {
   loja(id: $idRestaurante) {
-    nome
+    ...LojaDoCardapio
     podeEditar
     banner
     logo
@@ -428,7 +496,8 @@ export const BuscarCardapioDocument = gql`
     }
   }
 }
-    ${CategoriaDoCardapioFragmentDoc}`;
+    ${LojaDoCardapioFragmentDoc}
+${CategoriaDoCardapioFragmentDoc}`;
 
 /**
  * __useBuscarCardapioQuery__
@@ -523,6 +592,40 @@ export function useCriarProdutoMutation(baseOptions?: Apollo.MutationHookOptions
 export type CriarProdutoMutationHookResult = ReturnType<typeof useCriarProdutoMutation>;
 export type CriarProdutoMutationResult = Apollo.MutationResult<CriarProdutoMutation>;
 export type CriarProdutoMutationOptions = Apollo.BaseMutationOptions<CriarProdutoMutation, CriarProdutoMutationVariables>;
+export const EditarLojaDocument = gql`
+    mutation EditarLoja($id: String!, $loja: EdicaoDeLoja!) {
+  editarLoja(id: $id, loja: $loja) {
+    ...LojaDoCardapio
+  }
+}
+    ${LojaDoCardapioFragmentDoc}`;
+export type EditarLojaMutationFn = Apollo.MutationFunction<EditarLojaMutation, EditarLojaMutationVariables>;
+
+/**
+ * __useEditarLojaMutation__
+ *
+ * To run a mutation, you first call `useEditarLojaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditarLojaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editarLojaMutation, { data, loading, error }] = useEditarLojaMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      loja: // value for 'loja'
+ *   },
+ * });
+ */
+export function useEditarLojaMutation(baseOptions?: Apollo.MutationHookOptions<EditarLojaMutation, EditarLojaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditarLojaMutation, EditarLojaMutationVariables>(EditarLojaDocument, options);
+      }
+export type EditarLojaMutationHookResult = ReturnType<typeof useEditarLojaMutation>;
+export type EditarLojaMutationResult = Apollo.MutationResult<EditarLojaMutation>;
+export type EditarLojaMutationOptions = Apollo.BaseMutationOptions<EditarLojaMutation, EditarLojaMutationVariables>;
 export const EditarProdutoDocument = gql`
     mutation EditarProduto($id: String!, $produto: EntradaDeProduto!) {
   editarProduto(id: $id, produto: $produto) {
@@ -557,6 +660,41 @@ export function useEditarProdutoMutation(baseOptions?: Apollo.MutationHookOption
 export type EditarProdutoMutationHookResult = ReturnType<typeof useEditarProdutoMutation>;
 export type EditarProdutoMutationResult = Apollo.MutationResult<EditarProdutoMutation>;
 export type EditarProdutoMutationOptions = Apollo.BaseMutationOptions<EditarProdutoMutation, EditarProdutoMutationVariables>;
+export const ObterProdutoDoCardapioDocument = gql`
+    query ObterProdutoDoCardapio($id: String!) {
+  produto(id: $id) {
+    ...ProdutoDoCardapio
+  }
+}
+    ${ProdutoDoCardapioFragmentDoc}`;
+
+/**
+ * __useObterProdutoDoCardapioQuery__
+ *
+ * To run a query within a React component, call `useObterProdutoDoCardapioQuery` and pass it any options that fit your needs.
+ * When your component renders, `useObterProdutoDoCardapioQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useObterProdutoDoCardapioQuery({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useObterProdutoDoCardapioQuery(baseOptions: Apollo.QueryHookOptions<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>(ObterProdutoDoCardapioDocument, options);
+      }
+export function useObterProdutoDoCardapioLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>(ObterProdutoDoCardapioDocument, options);
+        }
+export type ObterProdutoDoCardapioQueryHookResult = ReturnType<typeof useObterProdutoDoCardapioQuery>;
+export type ObterProdutoDoCardapioLazyQueryHookResult = ReturnType<typeof useObterProdutoDoCardapioLazyQuery>;
+export type ObterProdutoDoCardapioQueryResult = Apollo.QueryResult<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>;
 export const RemoverCategoriaDocument = gql`
     mutation RemoverCategoria($id: String!) {
   deletarCategoria(id: $id)
@@ -588,3 +726,122 @@ export function useRemoverCategoriaMutation(baseOptions?: Apollo.MutationHookOpt
 export type RemoverCategoriaMutationHookResult = ReturnType<typeof useRemoverCategoriaMutation>;
 export type RemoverCategoriaMutationResult = Apollo.MutationResult<RemoverCategoriaMutation>;
 export type RemoverCategoriaMutationOptions = Apollo.BaseMutationOptions<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>;
+export type CategoriaKeySpecifier = ('_id' | 'nome' | 'conta' | 'produtos' | CategoriaKeySpecifier)[];
+export type CategoriaFieldPolicy = {
+	_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	nome?: FieldPolicy<any> | FieldReadFunction<any>,
+	conta?: FieldPolicy<any> | FieldReadFunction<any>,
+	produtos?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type ContaKeySpecifier = ('_id' | 'nome' | 'dono' | 'lojas' | ContaKeySpecifier)[];
+export type ContaFieldPolicy = {
+	_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	nome?: FieldPolicy<any> | FieldReadFunction<any>,
+	dono?: FieldPolicy<any> | FieldReadFunction<any>,
+	lojas?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type EnderecoKeySpecifier = ('rua' | 'numero' | 'cep' | 'cidade' | 'uf' | 'complemento' | EnderecoKeySpecifier)[];
+export type EnderecoFieldPolicy = {
+	rua?: FieldPolicy<any> | FieldReadFunction<any>,
+	numero?: FieldPolicy<any> | FieldReadFunction<any>,
+	cep?: FieldPolicy<any> | FieldReadFunction<any>,
+	cidade?: FieldPolicy<any> | FieldReadFunction<any>,
+	uf?: FieldPolicy<any> | FieldReadFunction<any>,
+	complemento?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type LojaKeySpecifier = ('_id' | 'nome' | 'cnpj' | 'endereco' | 'conta' | 'banner' | 'logo' | 'categorias' | 'podeEditar' | LojaKeySpecifier)[];
+export type LojaFieldPolicy = {
+	_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	nome?: FieldPolicy<any> | FieldReadFunction<any>,
+	cnpj?: FieldPolicy<any> | FieldReadFunction<any>,
+	endereco?: FieldPolicy<any> | FieldReadFunction<any>,
+	conta?: FieldPolicy<any> | FieldReadFunction<any>,
+	banner?: FieldPolicy<any> | FieldReadFunction<any>,
+	logo?: FieldPolicy<any> | FieldReadFunction<any>,
+	categorias?: FieldPolicy<any> | FieldReadFunction<any>,
+	podeEditar?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type MutationKeySpecifier = ('registrar' | 'entrar' | 'deleteConta' | 'criarLoja' | 'editarLoja' | 'deletarLoja' | 'criarProduto' | 'editarProduto' | 'criarCategoria' | 'deletarCategoria' | MutationKeySpecifier)[];
+export type MutationFieldPolicy = {
+	registrar?: FieldPolicy<any> | FieldReadFunction<any>,
+	entrar?: FieldPolicy<any> | FieldReadFunction<any>,
+	deleteConta?: FieldPolicy<any> | FieldReadFunction<any>,
+	criarLoja?: FieldPolicy<any> | FieldReadFunction<any>,
+	editarLoja?: FieldPolicy<any> | FieldReadFunction<any>,
+	deletarLoja?: FieldPolicy<any> | FieldReadFunction<any>,
+	criarProduto?: FieldPolicy<any> | FieldReadFunction<any>,
+	editarProduto?: FieldPolicy<any> | FieldReadFunction<any>,
+	criarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
+	deletarCategoria?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type ProdutoKeySpecifier = ('_id' | 'nome' | 'descricao' | 'preco' | 'urlDoPrato' | 'conta' | ProdutoKeySpecifier)[];
+export type ProdutoFieldPolicy = {
+	_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	nome?: FieldPolicy<any> | FieldReadFunction<any>,
+	descricao?: FieldPolicy<any> | FieldReadFunction<any>,
+	preco?: FieldPolicy<any> | FieldReadFunction<any>,
+	urlDoPrato?: FieldPolicy<any> | FieldReadFunction<any>,
+	conta?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type QueryKeySpecifier = ('contas' | 'conta' | 'lojas' | 'loja' | 'produtos' | 'produto' | 'usuarios' | 'usuario' | QueryKeySpecifier)[];
+export type QueryFieldPolicy = {
+	contas?: FieldPolicy<any> | FieldReadFunction<any>,
+	conta?: FieldPolicy<any> | FieldReadFunction<any>,
+	lojas?: FieldPolicy<any> | FieldReadFunction<any>,
+	loja?: FieldPolicy<any> | FieldReadFunction<any>,
+	produtos?: FieldPolicy<any> | FieldReadFunction<any>,
+	produto?: FieldPolicy<any> | FieldReadFunction<any>,
+	usuarios?: FieldPolicy<any> | FieldReadFunction<any>,
+	usuario?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type RegistroDeContaKeySpecifier = ('token' | 'usuario' | RegistroDeContaKeySpecifier)[];
+export type RegistroDeContaFieldPolicy = {
+	token?: FieldPolicy<any> | FieldReadFunction<any>,
+	usuario?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type UsuarioKeySpecifier = ('_id' | 'nome' | 'login' | 'email' | 'contas' | UsuarioKeySpecifier)[];
+export type UsuarioFieldPolicy = {
+	_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	nome?: FieldPolicy<any> | FieldReadFunction<any>,
+	login?: FieldPolicy<any> | FieldReadFunction<any>,
+	email?: FieldPolicy<any> | FieldReadFunction<any>,
+	contas?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type TypedTypePolicies = TypePolicies & {
+	Categoria?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | CategoriaKeySpecifier | (() => undefined | CategoriaKeySpecifier),
+		fields?: CategoriaFieldPolicy,
+	},
+	Conta?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ContaKeySpecifier | (() => undefined | ContaKeySpecifier),
+		fields?: ContaFieldPolicy,
+	},
+	Endereco?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | EnderecoKeySpecifier | (() => undefined | EnderecoKeySpecifier),
+		fields?: EnderecoFieldPolicy,
+	},
+	Loja?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | LojaKeySpecifier | (() => undefined | LojaKeySpecifier),
+		fields?: LojaFieldPolicy,
+	},
+	Mutation?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | MutationKeySpecifier | (() => undefined | MutationKeySpecifier),
+		fields?: MutationFieldPolicy,
+	},
+	Produto?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | ProdutoKeySpecifier | (() => undefined | ProdutoKeySpecifier),
+		fields?: ProdutoFieldPolicy,
+	},
+	Query?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | QueryKeySpecifier | (() => undefined | QueryKeySpecifier),
+		fields?: QueryFieldPolicy,
+	},
+	RegistroDeConta?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | RegistroDeContaKeySpecifier | (() => undefined | RegistroDeContaKeySpecifier),
+		fields?: RegistroDeContaFieldPolicy,
+	},
+	Usuario?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | UsuarioKeySpecifier | (() => undefined | UsuarioKeySpecifier),
+		fields?: UsuarioFieldPolicy,
+	}
+};
