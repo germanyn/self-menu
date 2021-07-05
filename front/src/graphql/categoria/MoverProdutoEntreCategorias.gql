@@ -1,0 +1,13 @@
+mutation MoverProdutoEntreCategorias(
+    $idCategoria: String!
+    $idProduto: String!
+    $indice: Int!
+    $idCategoriaNova: String
+) {
+   moverProdutoEntreCategorias(
+        idCategoria: $idCategoria
+        idProduto: $idProduto
+        indice: $indice
+        idCategoriaNova: $idCategoriaNova
+   ) 
+}

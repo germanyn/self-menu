@@ -3,34 +3,34 @@ import { createContext, useContext, useState } from "react"
 export type CardapioContextData = {
     mostraCriarCategoria: boolean
     setMostraCriarCategoria: (mostra: boolean) => void
-    categoriaId: string | null
-    setCategoriaId: (categoriaId: string | null) => void
-    scrollTo: string | null
-    setScrollTo: (categoriaId: string | null) => void
+    estaArrastandoCategoria: boolean
+    setEstaArrastandoCategoria: (arrastando: boolean) => void
+    salvando: boolean
+    setSalvando: (arrastando: boolean) => void
 }
 
 const CardapioContext = createContext<CardapioContextData>({
     mostraCriarCategoria: false,
     setMostraCriarCategoria: () => undefined,
-    categoriaId: null,
-    setCategoriaId: () => undefined,
-    scrollTo: null,
-    setScrollTo: () => undefined,
+    estaArrastandoCategoria: false,
+    setEstaArrastandoCategoria: () => undefined,
+    salvando: false,
+    setSalvando: () => undefined,
 })
 
 export const CardapioProvider: React.FC = ({ children }) => {
     const [mostraCriarCategoria, setMostraCriarCategoria] = useState<boolean>(false);
-    const [categoriaId, setCategoriaId] = useState<string | null>(null);
-    const [scrollTo, setScrollTo] = useState<string | null>(null);
+    const [estaArrastandoCategoria, setEstaArrastandoCategoria] = useState<boolean>(false);
+    const [salvando, setSalvando] = useState<boolean>(false);
     return (
         <CardapioContext.Provider
             value={{
                 mostraCriarCategoria,
                 setMostraCriarCategoria,
-                categoriaId,
-                setCategoriaId,
-                scrollTo,
-                setScrollTo,
+                estaArrastandoCategoria,
+                setEstaArrastandoCategoria,
+                salvando,
+                setSalvando
             }}
         >
             {children}

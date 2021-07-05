@@ -1,8 +1,6 @@
 import {
     Avatar,
-    Button,
     Grid,
-    Grow,
     IconButton,
     List,
     ListItem,
@@ -14,15 +12,13 @@ import {
 } from "@material-ui/core"
 import {
     Pencil,
-    Plus,
     Store
 } from 'mdi-material-ui'
 import { useState } from "react"
-import {
-    BuscarCardapioQueryHookResult
-} from "../../generated/graphql"
+import { useDrop } from 'react-dnd'
+import { BuscarCardapioQueryHookResult } from "../../generated/graphql"
+import { ArrastaveisEnum } from "./arrastaveis/tipos"
 import CategoriaDoCardapio from "./categoria/CategoriaDoCardapio"
-import { useCardapio } from "./context/CardapioContext"
 import DialogoDeEditarLoja from "./loja/DialogoDeEditarLoja"
 
 type CardapioProps = {
@@ -44,7 +40,6 @@ export const Cardapio: React.FC<CardapioProps> = ({
     };
     const [mostraEdicaoDeLoja, setMostraEdicaoDeLoja] = useState(false)
     const loja = data?.loja
-    const { setMostraCriarCategoria } = useCardapio()
     // const arrLength = loja?.categorias.length
     // const [elRefs, setElRefs] = useState<InViewHookResponse[]>([]);
     // const { setCategoriaId } = useCardapio()
@@ -70,6 +65,12 @@ export const Cardapio: React.FC<CardapioProps> = ({
     //     if (indice === -1) return
     //     setCategoriaId(loja.categorias[indice]._id)
     // }, [categoriasVisiveis])
+    const [, drop] = useDrop(() => ({
+        accept: [
+            ArrastaveisEnum.CATEGORIA,
+            ArrastaveisEnum.PRODUTO,
+        ],
+    }))
 
     if (loading) {
         return <div>carregando...</div>
@@ -93,8 +94,8 @@ export const Cardapio: React.FC<CardapioProps> = ({
                         </ListItemAvatar>
                         <ListItemText
                             primary={loja.nome}
-                            // secondary="&nbsp;"
-                            // secondary="Mais detalhes"
+                        // secondary="&nbsp;"
+                        // secondary="Mais detalhes"
                         />
                         <ListItemSecondaryAction>
                             <Zoom
@@ -120,14 +121,17 @@ export const Cardapio: React.FC<CardapioProps> = ({
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
-                    {loja.categorias.map(categoria => <CategoriaDoCardapio
-                        mostraEdicao={mostraEdicao}
-                        categoria={categoria}
-                        key={categoria._id}
-                        idRestaurante={idRestaurante}
-                    // ref={}
-                    />)}
-                    <Grow in={mostraEdicao}>
+                    <div ref={drop}>
+                        {loja.categorias.map((categoria, indice) => <CategoriaDoCardapio
+                            mostraEdicao={mostraEdicao}
+                            categoria={categoria}
+                            key={categoria._id}
+                            idRestaurante={idRestaurante}
+                            indice={indice}
+                        // ref={}
+                        />)}
+                    </div>
+                    {/* <Grow in={mostraEdicao}>
                         <ListItem style={{ paddingTop: '24px' }}>
                             <Button
                                 variant="outlined"
@@ -139,7 +143,7 @@ export const Cardapio: React.FC<CardapioProps> = ({
                                 Nova Categoria
                             </Button>
                         </ListItem>
-                    </Grow>
+                    </Grow> */}
                 </List>
             </Grid>
         </Grid>

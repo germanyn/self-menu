@@ -61,7 +61,9 @@ export default function AppDrawer({
         paper: clsx(classes.drawerPaper, !open && classes.drawerPaperClose),
       }}
       open={open}
-      onBackdropClick={() => setOpen(false)}
+      BackdropProps={{
+        onClick: () => setOpen(false),
+      }}
     >
       <div className={classes.toolbarIcon}>
         <img

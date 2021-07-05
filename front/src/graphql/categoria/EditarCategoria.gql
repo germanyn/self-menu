@@ -1,0 +1,11 @@
+mutation EditarCategoria(
+  $id: String!
+  $categoria: EdicaoDeCategoria!
+) {
+  editarCategoria(
+      id: $id
+      categoria: $categoria
+    ) {
+    ...CategoriaDoCardapio
+  }
+}

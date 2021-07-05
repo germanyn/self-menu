@@ -1,4 +1,6 @@
 import {
+    Backdrop,
+    CircularProgress,
     Container,
     Fab,
     makeStyles,
@@ -34,9 +36,9 @@ function TelaDeCardapio() {
     const history = useHistory()
     const produtoDaQuery = new URLSearchParams(location.search).get('produto')
     const {
-        setCategoriaId,
         mostraCriarCategoria,
         setMostraCriarCategoria,
+        salvando,
     } = useCardapio()
     const produto = typeof produtoDaQuery === 'string'
         ? produtoDaQuery
@@ -57,11 +59,14 @@ function TelaDeCardapio() {
         setMostraEdicao(podeEditar)
     }, [podeEditar])
 
-    useEffect(() => {
-        setCategoriaId(data?.loja.categorias[0]?._id|| null)
-    }, [data, setCategoriaId])
+    // useEffect(() => {
+    //     setCategoriaId(data?.loja.categorias[0]?._id|| null)
+    // }, [data, setCategoriaId])
 
     return <>
+        <Backdrop open={salvando}>
+            <CircularProgress color="inherit" />
+        </Backdrop>
         <Principal
             toolbar={(props) =>
                 <ToolbarDoCardapio

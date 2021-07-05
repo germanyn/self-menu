@@ -2,10 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
+import { AplicationDragAndDrop } from './pages/cardapio/arrastaveis/DragAndDropContext';
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
-    <App />,
+    <AplicationDragAndDrop>
+        <App />
+    </AplicationDragAndDrop>,
     document.getElementById('root')
 );
 

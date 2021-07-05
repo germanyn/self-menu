@@ -1,11 +1,11 @@
-import { BrowserRouter, Route, Switch } from 'react-router-dom'
+import { ConfirmProvider } from 'material-ui-confirm'
+import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import './App.css'
 import ApplicationApollo from './contexts/ApplicationApollo'
 import { AutenticacaoProvider } from './contexts/autenticacao'
 import TelaDeCardapio from './pages/cardapio/TelaDeCardapio'
 import TelaDeCadastro from './pages/TelaDeCadastro'
 import TelaDeLogin from './pages/TelaDeLogin'
-import { ConfirmProvider } from 'material-ui-confirm'
 
 function App() {
 	return (
@@ -18,6 +18,7 @@ function App() {
 				}}>
 					<BrowserRouter>
 						<Switch>
+							<Redirect path="/" exact to="/entrar" />
 							<Route path="/entrar" exact>
 								<TelaDeLogin/>
 							</Route>
@@ -29,7 +30,6 @@ function App() {
 									<Route path="/:idRestaurante">
 										<TelaDeCardapio/>
 									</Route>
-									<Route exact>Home</Route>
 								</Switch>
 							</Route>
 						</Switch>

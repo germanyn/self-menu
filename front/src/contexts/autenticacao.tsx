@@ -32,12 +32,12 @@ export const AutenticacaoProvider: React.FC = ({ children }) => {
     const [ token, setToken ] = useState<string | null>(null);
     const logado = !!token
     const setRegistro = (registro: LoginFragment) => {
-        localStorage.setItem(APP_USER, JSON.stringify(registro.usuario));
-        setUsuario({
+        const usuarioLogado: UsuarioLogado = {
             conta: registro.usuario.contas[0]._id,
             id: registro.usuario._id,
             nome: registro.usuario.nome,
-        })
+        }
+        localStorage.setItem(APP_USER, JSON.stringify(usuarioLogado));
         localStorage.setItem(APP_TOKEN, registro.token);
         setToken(registro.token)
     }

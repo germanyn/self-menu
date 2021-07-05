@@ -49,6 +49,17 @@ export class ProdutoResolver implements ResolverInterface<Produto> {
     return produto.toObject()
   }
 
+  @Authorized()
+  @Mutation(() => Boolean)
+  async excluirProduto(@Arg("id") id: string) {
+    await ProdutoModel.findByIdAndDelete(id)
+    await CategoriaModel.updateMany({}, {
+      $pull: { produtos: id },
+    }
+    )
+    return true
+  }
+
   @FieldResolver()
   async conta(@Root() produto: Produto) {
     const resultado = await ProdutoModel.populate(produto, {

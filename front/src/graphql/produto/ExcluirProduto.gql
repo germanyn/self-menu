@@ -1,0 +1,3 @@
+mutation ExcluirProduto($id: String!) {
+  excluirProduto(id: $id)
+}

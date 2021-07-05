@@ -60,7 +60,7 @@ const DetalhesDoProduto: React.FC<Props> = ({
         variables: { id },
     })
     const produto = data?.produto
-    const [mostraCriacaoDeProduto, setMostraCriacaoDeProduto] = useState(false)
+    const [mostraEdicaoDeProduto, setMostraEdicaoDeProduto] = useState(false)
     const theme = useTheme()
     const éMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -146,19 +146,25 @@ const DetalhesDoProduto: React.FC<Props> = ({
                 onClick={() => history.push(history.location.pathname)}
             />}
             {conteudoDoCard}
-            {mostraEdicao && <Fab
+            {mostraEdicao && produto && <Fab
                 color="primary"
                 aria-label="Editar produto"
-                // onClick={trocarModoEdicao}
+                onClick={() => setMostraEdicaoDeProduto(true)}
                 className={classes.fab}
             >
                 <Pencil />
             </Fab>}
-            {usuario && <DialogoDeEditarProduto
-                aberto={mostraCriacaoDeProduto}
+            {usuario && produto && <DialogoDeEditarProduto
+                aberto={mostraEdicaoDeProduto}
                 idConta={usuario.conta}
-                onFechar={() => setMostraCriacaoDeProduto(false)}
-                onFinalizar={() => setMostraCriacaoDeProduto(false)}
+                produtoInicial={{
+                  id: produto._id,
+                  nome: produto.nome,
+                  descricao: produto.descricao || '',
+                  preco: produto.preco ?? '',
+                }}
+                onFechar={() => setMostraEdicaoDeProduto(false)}
+                onFinalizar={() => setMostraEdicaoDeProduto(false)}
             />}
         </Dialog>
     );

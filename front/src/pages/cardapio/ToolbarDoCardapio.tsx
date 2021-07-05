@@ -77,7 +77,7 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                         noWrap
                         style={{ paddingLeft: '12px' }}
                     >
-                        Cardápio
+                        {data?.loja.nome}
                     </Typography>
                 )}
                 <Box flexGrow={1} />

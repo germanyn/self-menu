@@ -1,10 +1,10 @@
-import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver, Ctx } from "type-graphql"
-import { Loja } from "./Loja";
-import { EntradaDeLoja } from "./EntradaDeLoja";
-import { ContaModel, LojaModel } from "../models";
-import { Context } from "infraestrutura/context";
-import { Types } from "mongoose";
-import { EdicaoDeLoja } from "./EdicaoDeLoja";
+import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver, Ctx, Int } from 'type-graphql'
+import { Loja } from './Loja';
+import { EntradaDeLoja } from './EntradaDeLoja';
+import { ContaModel, LojaModel } from '../models';
+import { Context } from 'infraestrutura/context';
+import { Types } from 'mongoose';
+import { EdicaoDeLoja } from './EdicaoDeLoja';
 
 @Resolver(() => Loja)
 export class LojaResolver implements ResolverInterface<Loja> {
@@ -14,7 +14,7 @@ export class LojaResolver implements ResolverInterface<Loja> {
     }
 
     @Query(() => Loja)
-    async loja(@Arg("id") id: string) {
+    async loja(@Arg('id') id: string) {
         const loja = await LojaModel.findById(id).lean();
         if (!loja) throw new Error('Loja não encontrada')
         return loja
@@ -22,15 +22,15 @@ export class LojaResolver implements ResolverInterface<Loja> {
 
     @Authorized()
     @Mutation(() => Loja)
-    async criarLoja(@Arg("data") entrada: EntradaDeLoja) {
+    async criarLoja(@Arg('data') entrada: EntradaDeLoja) {
         return LojaModel.create(entrada)
     }
 
     @Authorized()
     @Mutation(() => Loja)
     async editarLoja(
-        @Arg("id") id: string,
-        @Arg("loja") entrada: EdicaoDeLoja,
+        @Arg('id') id: string,
+        @Arg('loja') entrada: EdicaoDeLoja,
     ) {
         const loja = await LojaModel.findById(id);
         if (!loja) throw new Error('Loja não encontrada')
@@ -40,9 +40,28 @@ export class LojaResolver implements ResolverInterface<Loja> {
 
     @Authorized()
     @Mutation(() => Boolean)
-    async deletarLoja(@Arg("id") id: string) {
+    async deletarLoja(@Arg('id') id: string) {
         await LojaModel.findByIdAndDelete(id);
         return true;
+    }
+
+    @Authorized()
+    @Mutation(() => Boolean)
+    async alterarOrdemDaCategoria(
+        @Arg('id') id: string,
+        @Arg('idCategoria') idCategoria: string,
+        @Arg('indice', () => Int) indice: number
+    ) {
+        const loja = await LojaModel.findById(id)
+        if (!loja) throw new Error('Loja não encontrada')
+
+        const indiceAtual = loja.categorias.indexOf(Types.ObjectId(idCategoria))
+        if (indiceAtual === -1) throw new Error('Categoria não encontrada na loja')
+
+        const [ categoria ] = loja.categorias.splice(indiceAtual, 1)
+        loja.categorias.splice(indice, 0, categoria)
+        await loja.save()
+        return true
     }
 
     @FieldResolver()

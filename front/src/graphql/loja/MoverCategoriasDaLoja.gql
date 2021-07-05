@@ -1,0 +1,11 @@
+mutation MoverCategoriaDaLoja(
+    $id: String!
+    $idCategoria: String!
+    $indice: Int!
+) {
+   alterarOrdemDaCategoria(
+       id: $id
+       idCategoria: $idCategoria
+       indice: $indice
+   ) 
+}

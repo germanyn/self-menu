@@ -36,6 +36,15 @@ export type Conta = {
   lojas: Array<Loja>;
 };
 
+export type CriacaoDeCategoria = {
+  nome: Scalars['String'];
+  lojaId: Scalars['String'];
+};
+
+export type EdicaoDeCategoria = {
+  nome: Scalars['String'];
+};
+
 export type EdicaoDeLoja = {
   nome: Scalars['String'];
 };
@@ -48,11 +57,6 @@ export type Endereco = {
   cidade: Scalars['String'];
   uf: Scalars['String'];
   complemento?: Maybe<Scalars['String']>;
-};
-
-export type EntradaDeCategoria = {
-  nome: Scalars['String'];
-  lojaId?: Maybe<Scalars['String']>;
 };
 
 export type EntradaDeConta = {
@@ -106,10 +110,14 @@ export type Mutation = {
   criarLoja: Loja;
   editarLoja: Loja;
   deletarLoja: Scalars['Boolean'];
+  alterarOrdemDaCategoria: Scalars['Boolean'];
   criarProduto: Produto;
   editarProduto: Produto;
+  excluirProduto: Scalars['Boolean'];
   criarCategoria: Categoria;
+  editarCategoria: Categoria;
   deletarCategoria: Scalars['Boolean'];
+  moverProdutoEntreCategorias: Scalars['Boolean'];
 };
 
 
@@ -144,6 +152,13 @@ export type MutationDeletarLojaArgs = {
 };
 
 
+export type MutationAlterarOrdemDaCategoriaArgs = {
+  indice: Scalars['Int'];
+  idCategoria: Scalars['String'];
+  id: Scalars['String'];
+};
+
+
 export type MutationCriarProdutoArgs = {
   data: EntradaDeProduto;
 };
@@ -155,13 +170,32 @@ export type MutationEditarProdutoArgs = {
 };
 
 
+export type MutationExcluirProdutoArgs = {
+  id: Scalars['String'];
+};
+
+
 export type MutationCriarCategoriaArgs = {
-  data: EntradaDeCategoria;
+  categoria: CriacaoDeCategoria;
+};
+
+
+export type MutationEditarCategoriaArgs = {
+  categoria: EdicaoDeCategoria;
+  id: Scalars['String'];
 };
 
 
 export type MutationDeletarCategoriaArgs = {
   id: Scalars['String'];
+};
+
+
+export type MutationMoverProdutoEntreCategoriasArgs = {
+  idCategoriaNova?: Maybe<Scalars['String']>;
+  indice: Scalars['Int'];
+  idProduto: Scalars['String'];
+  idCategoria: Scalars['String'];
 };
 
 export type Produto = {
@@ -292,7 +326,7 @@ export type CategoriaDoCardapioFragment = (
 );
 
 export type CriarCategoriaMutationVariables = Exact<{
-  entrada: EntradaDeCategoria;
+  categoria: CriacaoDeCategoria;
 }>;
 
 
@@ -304,17 +338,41 @@ export type CriarCategoriaMutation = (
   ) }
 );
 
-export type CriarProdutoMutationVariables = Exact<{
-  produto: EntradaDeProduto;
+export type EditarCategoriaMutationVariables = Exact<{
+  id: Scalars['String'];
+  categoria: EdicaoDeCategoria;
 }>;
 
 
-export type CriarProdutoMutation = (
+export type EditarCategoriaMutation = (
   { __typename?: 'Mutation' }
-  & { criarProduto: (
-    { __typename?: 'Produto' }
-    & ProdutoDoCardapioFragment
+  & { editarCategoria: (
+    { __typename?: 'Categoria' }
+    & CategoriaDoCardapioFragment
   ) }
+);
+
+export type MoverProdutoEntreCategoriasMutationVariables = Exact<{
+  idCategoria: Scalars['String'];
+  idProduto: Scalars['String'];
+  indice: Scalars['Int'];
+  idCategoriaNova?: Maybe<Scalars['String']>;
+}>;
+
+
+export type MoverProdutoEntreCategoriasMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'moverProdutoEntreCategorias'>
+);
+
+export type RemoverCategoriaMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type RemoverCategoriaMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'deletarCategoria'>
 );
 
 export type EditarLojaMutationVariables = Exact<{
@@ -328,6 +386,36 @@ export type EditarLojaMutation = (
   & { editarLoja: (
     { __typename?: 'Loja' }
     & LojaDoCardapioFragment
+  ) }
+);
+
+export type LojaDoCardapioFragment = (
+  { __typename?: 'Loja' }
+  & Pick<Loja, '_id' | 'nome'>
+);
+
+export type MoverCategoriaDaLojaMutationVariables = Exact<{
+  id: Scalars['String'];
+  idCategoria: Scalars['String'];
+  indice: Scalars['Int'];
+}>;
+
+
+export type MoverCategoriaDaLojaMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'alterarOrdemDaCategoria'>
+);
+
+export type CriarProdutoMutationVariables = Exact<{
+  produto: EntradaDeProduto;
+}>;
+
+
+export type CriarProdutoMutation = (
+  { __typename?: 'Mutation' }
+  & { criarProduto: (
+    { __typename?: 'Produto' }
+    & ProdutoDoCardapioFragment
   ) }
 );
 
@@ -345,9 +433,14 @@ export type EditarProdutoMutation = (
   ) }
 );
 
-export type LojaDoCardapioFragment = (
-  { __typename?: 'Loja' }
-  & Pick<Loja, '_id' | 'nome'>
+export type ExcluirProdutoMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type ExcluirProdutoMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'excluirProduto'>
 );
 
 export type ObterProdutoDoCardapioQueryVariables = Exact<{
@@ -366,16 +459,6 @@ export type ObterProdutoDoCardapioQuery = (
 export type ProdutoDoCardapioFragment = (
   { __typename?: 'Produto' }
   & Pick<Produto, '_id' | 'nome' | 'preco' | 'urlDoPrato' | 'descricao'>
-);
-
-export type RemoverCategoriaMutationVariables = Exact<{
-  id: Scalars['String'];
-}>;
-
-
-export type RemoverCategoriaMutation = (
-  { __typename?: 'Mutation' }
-  & Pick<Mutation, 'deletarCategoria'>
 );
 
 export const LoginFragmentDoc = gql`
@@ -527,8 +610,8 @@ export type BuscarCardapioQueryHookResult = ReturnType<typeof useBuscarCardapioQ
 export type BuscarCardapioLazyQueryHookResult = ReturnType<typeof useBuscarCardapioLazyQuery>;
 export type BuscarCardapioQueryResult = Apollo.QueryResult<BuscarCardapioQuery, BuscarCardapioQueryVariables>;
 export const CriarCategoriaDocument = gql`
-    mutation CriarCategoria($entrada: EntradaDeCategoria!) {
-  criarCategoria(data: $entrada) {
+    mutation CriarCategoria($categoria: CriacaoDeCategoria!) {
+  criarCategoria(categoria: $categoria) {
     ...CategoriaDoCardapio
   }
 }
@@ -548,7 +631,7 @@ export type CriarCategoriaMutationFn = Apollo.MutationFunction<CriarCategoriaMut
  * @example
  * const [criarCategoriaMutation, { data, loading, error }] = useCriarCategoriaMutation({
  *   variables: {
- *      entrada: // value for 'entrada'
+ *      categoria: // value for 'categoria'
  *   },
  * });
  */
@@ -559,39 +642,110 @@ export function useCriarCategoriaMutation(baseOptions?: Apollo.MutationHookOptio
 export type CriarCategoriaMutationHookResult = ReturnType<typeof useCriarCategoriaMutation>;
 export type CriarCategoriaMutationResult = Apollo.MutationResult<CriarCategoriaMutation>;
 export type CriarCategoriaMutationOptions = Apollo.BaseMutationOptions<CriarCategoriaMutation, CriarCategoriaMutationVariables>;
-export const CriarProdutoDocument = gql`
-    mutation CriarProduto($produto: EntradaDeProduto!) {
-  criarProduto(data: $produto) {
-    ...ProdutoDoCardapio
+export const EditarCategoriaDocument = gql`
+    mutation EditarCategoria($id: String!, $categoria: EdicaoDeCategoria!) {
+  editarCategoria(id: $id, categoria: $categoria) {
+    ...CategoriaDoCardapio
   }
 }
-    ${ProdutoDoCardapioFragmentDoc}`;
-export type CriarProdutoMutationFn = Apollo.MutationFunction<CriarProdutoMutation, CriarProdutoMutationVariables>;
+    ${CategoriaDoCardapioFragmentDoc}`;
+export type EditarCategoriaMutationFn = Apollo.MutationFunction<EditarCategoriaMutation, EditarCategoriaMutationVariables>;
 
 /**
- * __useCriarProdutoMutation__
+ * __useEditarCategoriaMutation__
  *
- * To run a mutation, you first call `useCriarProdutoMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useCriarProdutoMutation` returns a tuple that includes:
+ * To run a mutation, you first call `useEditarCategoriaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditarCategoriaMutation` returns a tuple that includes:
  * - A mutate function that you can call at any time to execute the mutation
  * - An object with fields that represent the current status of the mutation's execution
  *
  * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
  *
  * @example
- * const [criarProdutoMutation, { data, loading, error }] = useCriarProdutoMutation({
+ * const [editarCategoriaMutation, { data, loading, error }] = useEditarCategoriaMutation({
  *   variables: {
- *      produto: // value for 'produto'
+ *      id: // value for 'id'
+ *      categoria: // value for 'categoria'
  *   },
  * });
  */
-export function useCriarProdutoMutation(baseOptions?: Apollo.MutationHookOptions<CriarProdutoMutation, CriarProdutoMutationVariables>) {
+export function useEditarCategoriaMutation(baseOptions?: Apollo.MutationHookOptions<EditarCategoriaMutation, EditarCategoriaMutationVariables>) {
         const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<CriarProdutoMutation, CriarProdutoMutationVariables>(CriarProdutoDocument, options);
+        return Apollo.useMutation<EditarCategoriaMutation, EditarCategoriaMutationVariables>(EditarCategoriaDocument, options);
       }
-export type CriarProdutoMutationHookResult = ReturnType<typeof useCriarProdutoMutation>;
-export type CriarProdutoMutationResult = Apollo.MutationResult<CriarProdutoMutation>;
-export type CriarProdutoMutationOptions = Apollo.BaseMutationOptions<CriarProdutoMutation, CriarProdutoMutationVariables>;
+export type EditarCategoriaMutationHookResult = ReturnType<typeof useEditarCategoriaMutation>;
+export type EditarCategoriaMutationResult = Apollo.MutationResult<EditarCategoriaMutation>;
+export type EditarCategoriaMutationOptions = Apollo.BaseMutationOptions<EditarCategoriaMutation, EditarCategoriaMutationVariables>;
+export const MoverProdutoEntreCategoriasDocument = gql`
+    mutation MoverProdutoEntreCategorias($idCategoria: String!, $idProduto: String!, $indice: Int!, $idCategoriaNova: String) {
+  moverProdutoEntreCategorias(
+    idCategoria: $idCategoria
+    idProduto: $idProduto
+    indice: $indice
+    idCategoriaNova: $idCategoriaNova
+  )
+}
+    `;
+export type MoverProdutoEntreCategoriasMutationFn = Apollo.MutationFunction<MoverProdutoEntreCategoriasMutation, MoverProdutoEntreCategoriasMutationVariables>;
+
+/**
+ * __useMoverProdutoEntreCategoriasMutation__
+ *
+ * To run a mutation, you first call `useMoverProdutoEntreCategoriasMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMoverProdutoEntreCategoriasMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [moverProdutoEntreCategoriasMutation, { data, loading, error }] = useMoverProdutoEntreCategoriasMutation({
+ *   variables: {
+ *      idCategoria: // value for 'idCategoria'
+ *      idProduto: // value for 'idProduto'
+ *      indice: // value for 'indice'
+ *      idCategoriaNova: // value for 'idCategoriaNova'
+ *   },
+ * });
+ */
+export function useMoverProdutoEntreCategoriasMutation(baseOptions?: Apollo.MutationHookOptions<MoverProdutoEntreCategoriasMutation, MoverProdutoEntreCategoriasMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MoverProdutoEntreCategoriasMutation, MoverProdutoEntreCategoriasMutationVariables>(MoverProdutoEntreCategoriasDocument, options);
+      }
+export type MoverProdutoEntreCategoriasMutationHookResult = ReturnType<typeof useMoverProdutoEntreCategoriasMutation>;
+export type MoverProdutoEntreCategoriasMutationResult = Apollo.MutationResult<MoverProdutoEntreCategoriasMutation>;
+export type MoverProdutoEntreCategoriasMutationOptions = Apollo.BaseMutationOptions<MoverProdutoEntreCategoriasMutation, MoverProdutoEntreCategoriasMutationVariables>;
+export const RemoverCategoriaDocument = gql`
+    mutation RemoverCategoria($id: String!) {
+  deletarCategoria(id: $id)
+}
+    `;
+export type RemoverCategoriaMutationFn = Apollo.MutationFunction<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>;
+
+/**
+ * __useRemoverCategoriaMutation__
+ *
+ * To run a mutation, you first call `useRemoverCategoriaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useRemoverCategoriaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [removerCategoriaMutation, { data, loading, error }] = useRemoverCategoriaMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useRemoverCategoriaMutation(baseOptions?: Apollo.MutationHookOptions<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>(RemoverCategoriaDocument, options);
+      }
+export type RemoverCategoriaMutationHookResult = ReturnType<typeof useRemoverCategoriaMutation>;
+export type RemoverCategoriaMutationResult = Apollo.MutationResult<RemoverCategoriaMutation>;
+export type RemoverCategoriaMutationOptions = Apollo.BaseMutationOptions<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>;
 export const EditarLojaDocument = gql`
     mutation EditarLoja($id: String!, $loja: EdicaoDeLoja!) {
   editarLoja(id: $id, loja: $loja) {
@@ -626,6 +780,72 @@ export function useEditarLojaMutation(baseOptions?: Apollo.MutationHookOptions<E
 export type EditarLojaMutationHookResult = ReturnType<typeof useEditarLojaMutation>;
 export type EditarLojaMutationResult = Apollo.MutationResult<EditarLojaMutation>;
 export type EditarLojaMutationOptions = Apollo.BaseMutationOptions<EditarLojaMutation, EditarLojaMutationVariables>;
+export const MoverCategoriaDaLojaDocument = gql`
+    mutation MoverCategoriaDaLoja($id: String!, $idCategoria: String!, $indice: Int!) {
+  alterarOrdemDaCategoria(id: $id, idCategoria: $idCategoria, indice: $indice)
+}
+    `;
+export type MoverCategoriaDaLojaMutationFn = Apollo.MutationFunction<MoverCategoriaDaLojaMutation, MoverCategoriaDaLojaMutationVariables>;
+
+/**
+ * __useMoverCategoriaDaLojaMutation__
+ *
+ * To run a mutation, you first call `useMoverCategoriaDaLojaMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useMoverCategoriaDaLojaMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [moverCategoriaDaLojaMutation, { data, loading, error }] = useMoverCategoriaDaLojaMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *      idCategoria: // value for 'idCategoria'
+ *      indice: // value for 'indice'
+ *   },
+ * });
+ */
+export function useMoverCategoriaDaLojaMutation(baseOptions?: Apollo.MutationHookOptions<MoverCategoriaDaLojaMutation, MoverCategoriaDaLojaMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<MoverCategoriaDaLojaMutation, MoverCategoriaDaLojaMutationVariables>(MoverCategoriaDaLojaDocument, options);
+      }
+export type MoverCategoriaDaLojaMutationHookResult = ReturnType<typeof useMoverCategoriaDaLojaMutation>;
+export type MoverCategoriaDaLojaMutationResult = Apollo.MutationResult<MoverCategoriaDaLojaMutation>;
+export type MoverCategoriaDaLojaMutationOptions = Apollo.BaseMutationOptions<MoverCategoriaDaLojaMutation, MoverCategoriaDaLojaMutationVariables>;
+export const CriarProdutoDocument = gql`
+    mutation CriarProduto($produto: EntradaDeProduto!) {
+  criarProduto(data: $produto) {
+    ...ProdutoDoCardapio
+  }
+}
+    ${ProdutoDoCardapioFragmentDoc}`;
+export type CriarProdutoMutationFn = Apollo.MutationFunction<CriarProdutoMutation, CriarProdutoMutationVariables>;
+
+/**
+ * __useCriarProdutoMutation__
+ *
+ * To run a mutation, you first call `useCriarProdutoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCriarProdutoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [criarProdutoMutation, { data, loading, error }] = useCriarProdutoMutation({
+ *   variables: {
+ *      produto: // value for 'produto'
+ *   },
+ * });
+ */
+export function useCriarProdutoMutation(baseOptions?: Apollo.MutationHookOptions<CriarProdutoMutation, CriarProdutoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CriarProdutoMutation, CriarProdutoMutationVariables>(CriarProdutoDocument, options);
+      }
+export type CriarProdutoMutationHookResult = ReturnType<typeof useCriarProdutoMutation>;
+export type CriarProdutoMutationResult = Apollo.MutationResult<CriarProdutoMutation>;
+export type CriarProdutoMutationOptions = Apollo.BaseMutationOptions<CriarProdutoMutation, CriarProdutoMutationVariables>;
 export const EditarProdutoDocument = gql`
     mutation EditarProduto($id: String!, $produto: EntradaDeProduto!) {
   editarProduto(id: $id, produto: $produto) {
@@ -660,6 +880,37 @@ export function useEditarProdutoMutation(baseOptions?: Apollo.MutationHookOption
 export type EditarProdutoMutationHookResult = ReturnType<typeof useEditarProdutoMutation>;
 export type EditarProdutoMutationResult = Apollo.MutationResult<EditarProdutoMutation>;
 export type EditarProdutoMutationOptions = Apollo.BaseMutationOptions<EditarProdutoMutation, EditarProdutoMutationVariables>;
+export const ExcluirProdutoDocument = gql`
+    mutation ExcluirProduto($id: String!) {
+  excluirProduto(id: $id)
+}
+    `;
+export type ExcluirProdutoMutationFn = Apollo.MutationFunction<ExcluirProdutoMutation, ExcluirProdutoMutationVariables>;
+
+/**
+ * __useExcluirProdutoMutation__
+ *
+ * To run a mutation, you first call `useExcluirProdutoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useExcluirProdutoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [excluirProdutoMutation, { data, loading, error }] = useExcluirProdutoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useExcluirProdutoMutation(baseOptions?: Apollo.MutationHookOptions<ExcluirProdutoMutation, ExcluirProdutoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ExcluirProdutoMutation, ExcluirProdutoMutationVariables>(ExcluirProdutoDocument, options);
+      }
+export type ExcluirProdutoMutationHookResult = ReturnType<typeof useExcluirProdutoMutation>;
+export type ExcluirProdutoMutationResult = Apollo.MutationResult<ExcluirProdutoMutation>;
+export type ExcluirProdutoMutationOptions = Apollo.BaseMutationOptions<ExcluirProdutoMutation, ExcluirProdutoMutationVariables>;
 export const ObterProdutoDoCardapioDocument = gql`
     query ObterProdutoDoCardapio($id: String!) {
   produto(id: $id) {
@@ -695,37 +946,6 @@ export function useObterProdutoDoCardapioLazyQuery(baseOptions?: Apollo.LazyQuer
 export type ObterProdutoDoCardapioQueryHookResult = ReturnType<typeof useObterProdutoDoCardapioQuery>;
 export type ObterProdutoDoCardapioLazyQueryHookResult = ReturnType<typeof useObterProdutoDoCardapioLazyQuery>;
 export type ObterProdutoDoCardapioQueryResult = Apollo.QueryResult<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>;
-export const RemoverCategoriaDocument = gql`
-    mutation RemoverCategoria($id: String!) {
-  deletarCategoria(id: $id)
-}
-    `;
-export type RemoverCategoriaMutationFn = Apollo.MutationFunction<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>;
-
-/**
- * __useRemoverCategoriaMutation__
- *
- * To run a mutation, you first call `useRemoverCategoriaMutation` within a React component and pass it any options that fit your needs.
- * When your component renders, `useRemoverCategoriaMutation` returns a tuple that includes:
- * - A mutate function that you can call at any time to execute the mutation
- * - An object with fields that represent the current status of the mutation's execution
- *
- * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
- *
- * @example
- * const [removerCategoriaMutation, { data, loading, error }] = useRemoverCategoriaMutation({
- *   variables: {
- *      id: // value for 'id'
- *   },
- * });
- */
-export function useRemoverCategoriaMutation(baseOptions?: Apollo.MutationHookOptions<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useMutation<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>(RemoverCategoriaDocument, options);
-      }
-export type RemoverCategoriaMutationHookResult = ReturnType<typeof useRemoverCategoriaMutation>;
-export type RemoverCategoriaMutationResult = Apollo.MutationResult<RemoverCategoriaMutation>;
-export type RemoverCategoriaMutationOptions = Apollo.BaseMutationOptions<RemoverCategoriaMutation, RemoverCategoriaMutationVariables>;
 export type CategoriaKeySpecifier = ('_id' | 'nome' | 'conta' | 'produtos' | CategoriaKeySpecifier)[];
 export type CategoriaFieldPolicy = {
 	_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -761,7 +981,7 @@ export type LojaFieldPolicy = {
 	categorias?: FieldPolicy<any> | FieldReadFunction<any>,
 	podeEditar?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('registrar' | 'entrar' | 'deleteConta' | 'criarLoja' | 'editarLoja' | 'deletarLoja' | 'criarProduto' | 'editarProduto' | 'criarCategoria' | 'deletarCategoria' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('registrar' | 'entrar' | 'deleteConta' | 'criarLoja' | 'editarLoja' | 'deletarLoja' | 'alterarOrdemDaCategoria' | 'criarProduto' | 'editarProduto' | 'excluirProduto' | 'criarCategoria' | 'editarCategoria' | 'deletarCategoria' | 'moverProdutoEntreCategorias' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	registrar?: FieldPolicy<any> | FieldReadFunction<any>,
 	entrar?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -769,10 +989,14 @@ export type MutationFieldPolicy = {
 	criarLoja?: FieldPolicy<any> | FieldReadFunction<any>,
 	editarLoja?: FieldPolicy<any> | FieldReadFunction<any>,
 	deletarLoja?: FieldPolicy<any> | FieldReadFunction<any>,
+	alterarOrdemDaCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
 	criarProduto?: FieldPolicy<any> | FieldReadFunction<any>,
 	editarProduto?: FieldPolicy<any> | FieldReadFunction<any>,
+	excluirProduto?: FieldPolicy<any> | FieldReadFunction<any>,
 	criarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
-	deletarCategoria?: FieldPolicy<any> | FieldReadFunction<any>
+	editarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
+	deletarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
+	moverProdutoEntreCategorias?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ProdutoKeySpecifier = ('_id' | 'nome' | 'descricao' | 'preco' | 'urlDoPrato' | 'conta' | ProdutoKeySpecifier)[];
 export type ProdutoFieldPolicy = {

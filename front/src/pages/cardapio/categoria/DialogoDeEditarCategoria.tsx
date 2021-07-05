@@ -1,9 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@material-ui/core';
 import { Form, Formik, FormikProps } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
-import { BuscarCardapioDocument, BuscarCardapioQuery, useCriarCategoriaMutation } from '../../../generated/graphql';
+import { BuscarCardapioDocument, BuscarCardapioQuery, CategoriaDoCardapioFragment, CategoriaDoCardapioFragmentDoc, EdicaoDeCategoria, useCriarCategoriaMutation, useEditarCategoriaMutation } from '../../../generated/graphql';
 import { usePrevious } from '../../../utils';
 import { ArrayElement } from '../../../utils/types';
+import update from 'immutability-helper'
 
 const DialogoDeEditarCategoria: React.FC<EditarProps> = ({
     id,
@@ -17,9 +18,23 @@ const DialogoDeEditarCategoria: React.FC<EditarProps> = ({
     const abertoAnterior = usePrevious(aberto);
 
     const [categoria, setCategoria] = useState(gerarFormularioDeCategoria())
+    const [editarCategoria] = useEditarCategoriaMutation({
+        update(cache, { data }) {
+            const categoriaEditada = data?.editarCategoria
+            if (!categoriaEditada) return
+
+            cache.writeFragment<CategoriaDoCardapioFragment>({
+                id: `Categoria:${categoriaEditada._id}`,
+                fragment: CategoriaDoCardapioFragmentDoc,
+                fragmentName: 'CategoriaDoCardapio',
+                data: categoriaEditada,
+            })     
+        }
+    })
     const [criarCategoria] = useCriarCategoriaMutation({
         update(cache, { data }) {
-            if (!data) return
+            const categoria = data?.criarCategoria
+            if (!categoria) return
 
             const buscaDeCardapio = cache.readQuery<BuscarCardapioQuery>({
                 query: BuscarCardapioDocument,
@@ -37,10 +52,9 @@ const DialogoDeEditarCategoria: React.FC<EditarProps> = ({
                     ...buscaDeCardapio,
                     loja: {
                         ...buscaDeCardapio.loja,
-                        categorias: [
-                            ...buscaDeCardapio.loja.categorias,
-                            data.criarCategoria,
-                        ]
+                        categorias: update(buscaDeCardapio.loja.categorias, {
+                            $push: [categoria],
+                        })
                     }
                 }
             })        
@@ -83,16 +97,29 @@ const DialogoDeEditarCategoria: React.FC<EditarProps> = ({
                 onSubmit={async (valores, { setSubmitting }) => {
                     try {
                         setSubmitting(true)
-                        const { data } = await criarCategoria({
-                            variables: {
-                                entrada: {
-                                    lojaId,
-                                    nome: valores.nome,
+                        const categoria: EdicaoDeCategoria = {
+                            nome: valores.nome,
+                        }
+                        const { data } = categoriaInicial?.id
+                            ? await editarCategoria({
+                                variables: {
+                                    id: categoriaInicial.id,
+                                    categoria,
                                 },
-                            },
-                        })
+                            })
+                            : await criarCategoria({
+                                variables: {
+                                    categoria: {
+                                        ...categoria,
+                                        lojaId,
+                                    },
+                                },
+                            })
                         if (!data) return
-                        onFinalizar && onFinalizar(data.criarCategoria)
+                        onFinalizar && onFinalizar('criarCategoria' in data
+                            ? data.criarCategoria
+                            : data.editarCategoria
+                        )
                         onFechar && onFechar()
                     } catch (error) {
                         alert(error)

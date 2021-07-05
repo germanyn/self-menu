@@ -112,7 +112,6 @@ const DialogoDeEditarProduto: React.FC<EditarProps> = ({
                         preco?: string
                     } = {};
                     if (!values.nome) errors.nome = 'Obrigatório'
-                    if (!values.preco) errors.preco = 'Obrigatório'
                     return errors;
                 }}
                 onSubmit={async (valores, { setSubmitting }) => {
@@ -122,8 +121,8 @@ const DialogoDeEditarProduto: React.FC<EditarProps> = ({
                         const produto: EntradaDeProduto = {
                             nome: valores.nome,
                             descricao: valores.descricao || undefined,
-                            preco: valores.preco !== null
-                                ? Number(valores.preco || 0)
+                            preco: typeof valores.preco === 'number'
+                                ? valores.preco
                                 : undefined,
                             contaId: contaId,
                             categoriaId: idCategoria || undefined,
@@ -240,7 +239,7 @@ function gerarFormularioDeProduto(): FormularioDeProduto {
     return {
         nome: '',
         descricao: '',
-        preco: null,
+        preco: '',
     }
 }
 
@@ -248,7 +247,7 @@ type FormularioDeProduto = {
     id?: string
     nome: string
     descricao: string
-    preco: number | null
+    preco: number | ''
 }
 
 export default DialogoDeEditarProduto
