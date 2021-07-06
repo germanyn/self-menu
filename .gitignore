@@ -1,3 +1,5 @@
 data
 node_modules
 db.sqlite3
+firebase-debug.log
+.firebase

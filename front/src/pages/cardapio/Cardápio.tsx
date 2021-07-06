@@ -7,9 +7,11 @@ import {
     ListItemAvatar,
     ListItemSecondaryAction,
     ListItemText,
+    Typography,
     useTheme,
     Zoom
 } from "@material-ui/core"
+import { AddCircleOutlined } from "@material-ui/icons"
 import {
     Pencil,
     Store
@@ -121,6 +123,18 @@ export const Cardapio: React.FC<CardapioProps> = ({
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
+                    {mostraEdicao && !loja.categorias.length && (
+                        <ListItem
+                            style={{
+                                minHeight: '250px',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Typography
+                                style={{ display: 'flex', color: 'grey' }}
+                            > Clique em&nbsp;<AddCircleOutlined style={{ color: theme.palette.primary.dark }} />&nbsp;para criar uma categoria </Typography>
+                        </ListItem>
+                    )}
                     <div ref={drop}>
                         {loja.categorias.map((categoria, indice) => <CategoriaDoCardapio
                             mostraEdicao={mostraEdicao}

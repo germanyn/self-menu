@@ -1,6 +1,6 @@
 // @ts-check
-const { LojaModel, UsuarioModel } = require("../src/modulos/models");
-const { criarConexaoComBanco } = require('../src/database')
+const { LojaModel, UsuarioModel } = require("../modulos/models");
+const { criarConexaoComBanco } = require('../database')
 
 /**
  * Make any changes you need to make to the database here

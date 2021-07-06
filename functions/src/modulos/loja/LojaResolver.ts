@@ -1,10 +1,10 @@
-import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver, Ctx, Int } from 'type-graphql'
-import { Loja } from './Loja';
-import { EntradaDeLoja } from './EntradaDeLoja';
-import { ContaModel, LojaModel } from '../models';
 import { Context } from 'infraestrutura/context';
 import { Types } from 'mongoose';
+import { Arg, Authorized, Ctx, FieldResolver, Int, Mutation, Query, Resolver, ResolverInterface, Root } from 'type-graphql';
+import { LojaModel } from '../models';
 import { EdicaoDeLoja } from './EdicaoDeLoja';
+import { EntradaDeLoja } from './EntradaDeLoja';
+import { Loja } from './Loja';
 
 @Resolver(() => Loja)
 export class LojaResolver implements ResolverInterface<Loja> {

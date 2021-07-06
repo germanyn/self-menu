@@ -6,12 +6,16 @@ import schema from "./schema"
 import express = require('express')
 import jwt = require('express-jwt')
 
-async function main() {
+const app = express()
+
+export default async function main() {
   await criarConexaoComBanco()
-  
-  const app = express()
 
   const path = "/graphql"
+
+  app.get('/', (req, res) => {
+    res.send('health OK')
+  })
 
   app.use(
     jwt({
@@ -41,10 +45,10 @@ async function main() {
       credentials: true
     },
   })
-  await new Promise(resolve => app.listen({ port: 4000 }, () => resolve(undefined)))
-  console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
-  return { server, app }
+  // await new Promise(resolve => app.listen({ port: 4000 }, () => resolve(undefined)))
+  // console.log(`🚀 Server ready at http://localhost:4000${server.graphqlPath}`)
+  return {
+    app,
+    server,
+  }
 }
-
-
-main()

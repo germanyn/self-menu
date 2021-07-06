@@ -1,8 +1,7 @@
-import { Resolver, Query, Mutation, Arg, Authorized, ResolverInterface, Root, FieldResolver, Ctx } from "type-graphql"
-import { Produto } from "./Produto"
+import { Arg, Authorized, FieldResolver, Mutation, Query, Resolver, ResolverInterface, Root } from "type-graphql"
+import { CategoriaModel, ProdutoModel } from "../models"
 import { EntradaDeProduto } from "./EntradaDeProduto"
-import { CategoriaModel, ContaModel, ProdutoModel } from "../models"
-import { Context } from "infraestrutura/context"
+import { Produto } from "./Produto"
 
 @Resolver(() => Produto)
 export class ProdutoResolver implements ResolverInterface<Produto> {
@@ -23,6 +22,7 @@ export class ProdutoResolver implements ResolverInterface<Produto> {
       nome: entrada.nome,
       preco: entrada.preco,
       conta: entrada.contaId,
+      descricao: entrada.descricao,
     })
     if (entrada.categoriaId)
       await CategoriaModel.findByIdAndUpdate(entrada.categoriaId, {
@@ -40,13 +40,10 @@ export class ProdutoResolver implements ResolverInterface<Produto> {
     const produto = await ProdutoModel.findByIdAndUpdate(id, {
       nome: entrada.nome,
       preco: entrada.preco,
-    }, { new: true })
+      descricao: entrada.descricao,
+    }, { new: true }).lean()
     if (!produto) throw new Error('Produto não encontrado')
-    if (entrada.categoriaId)
-      await CategoriaModel.findByIdAndUpdate(entrada.categoriaId, {
-        $push: { produtos: id } }
-      )
-    return produto.toObject()
+    return produto
   }
 
   @Authorized()
