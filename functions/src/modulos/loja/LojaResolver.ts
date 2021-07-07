@@ -1,6 +1,7 @@
 import { Context } from 'infraestrutura/context';
+import { PaginacaoArgs } from '../commons/Paginacao';
 import { Types } from 'mongoose';
-import { Arg, Authorized, Ctx, FieldResolver, Int, Mutation, Query, Resolver, ResolverInterface, Root } from 'type-graphql';
+import { Arg, Args, Authorized, Ctx, FieldResolver, Int, Mutation, Query, Resolver, ResolverInterface, Root } from 'type-graphql';
 import { LojaModel } from '../models';
 import { EdicaoDeLoja } from './EdicaoDeLoja';
 import { EntradaDeLoja } from './EntradaDeLoja';
@@ -9,12 +10,17 @@ import { Loja } from './Loja';
 @Resolver(() => Loja)
 export class LojaResolver implements ResolverInterface<Loja> {
     @Query(() => [Loja])
-    async lojas() {
-        return LojaModel.find().lean();
+    async lojas(@Args() paginacao: PaginacaoArgs) {
+        return LojaModel
+            .find()
+            .limit(paginacao.limit || 10)
+            .skip(paginacao.offset || 0)
+            .lean();
     }
 
     @Query(() => Loja)
     async loja(@Arg('id') id: string) {
+        if (!Types.ObjectId.isValid(id)) throw new Error('Loja não encontrada')
         const loja = await LojaModel.findById(id).lean();
         if (!loja) throw new Error('Loja não encontrada')
         return loja

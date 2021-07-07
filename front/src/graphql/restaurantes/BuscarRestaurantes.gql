@@ -1,0 +1,7 @@
+query BuscarRestaurantes($limit: Int, $offset: Int) {
+    lojas(limit: $limit, offset: $offset) {
+        _id
+        nome
+        banner
+    }
+}

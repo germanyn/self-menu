@@ -35,6 +35,9 @@ export default async function main() {
       };
       return context;
     },
+    playground: {
+      endpoint: '/self-menu/us-central1/api/graphql',
+    },
   })
   await server.start()
   server.applyMiddleware({

@@ -1,5 +1,4 @@
 import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-ui/core';
-import AccountCircle from '@material-ui/icons/AccountCircle';
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import React from 'react';
@@ -41,7 +40,8 @@ const useStyles = makeStyles((theme) => ({
 function AppToolbar({
     setMenuAberto,
     menuAberto,
-}: React.PropsWithChildren<ToolbarPropTypes>) {
+    titulo,
+}: React.PropsWithChildren<AppToolbarProps>) {
     const classes = useStyles();
     const toolbarClasses = useToolbarStyles();
     const toggleDrawer = () => {
@@ -62,12 +62,9 @@ function AppToolbar({
               >
                   <MenuIcon />
               </IconButton>
-              <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-                  Dashboard
-              </Typography>
-              <IconButton color="inherit">
-                  <AccountCircle />
-              </IconButton>
+              {titulo && <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
+                  { titulo }
+              </Typography>}
           </Toolbar>
       </AppBar>
     )
@@ -76,6 +73,10 @@ function AppToolbar({
 export type ToolbarPropTypes = {
     menuAberto: boolean
     setMenuAberto: (aberto: boolean) => void
+}
+
+export type AppToolbarProps = ToolbarPropTypes & {
+  titulo?: string
 }
 
 export default AppToolbar

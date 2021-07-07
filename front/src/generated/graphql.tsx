@@ -226,6 +226,12 @@ export type QueryContaArgs = {
 };
 
 
+export type QueryLojasArgs = {
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
+
 export type QueryLojaArgs = {
   id: Scalars['String'];
 };
@@ -459,6 +465,20 @@ export type ObterProdutoDoCardapioQuery = (
 export type ProdutoDoCardapioFragment = (
   { __typename?: 'Produto' }
   & Pick<Produto, '_id' | 'nome' | 'preco' | 'urlDoPrato' | 'descricao'>
+);
+
+export type BuscarRestaurantesQueryVariables = Exact<{
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+}>;
+
+
+export type BuscarRestaurantesQuery = (
+  { __typename?: 'Query' }
+  & { lojas: Array<(
+    { __typename?: 'Loja' }
+    & Pick<Loja, '_id' | 'nome' | 'banner'>
+  )> }
 );
 
 export const LoginFragmentDoc = gql`
@@ -946,6 +966,44 @@ export function useObterProdutoDoCardapioLazyQuery(baseOptions?: Apollo.LazyQuer
 export type ObterProdutoDoCardapioQueryHookResult = ReturnType<typeof useObterProdutoDoCardapioQuery>;
 export type ObterProdutoDoCardapioLazyQueryHookResult = ReturnType<typeof useObterProdutoDoCardapioLazyQuery>;
 export type ObterProdutoDoCardapioQueryResult = Apollo.QueryResult<ObterProdutoDoCardapioQuery, ObterProdutoDoCardapioQueryVariables>;
+export const BuscarRestaurantesDocument = gql`
+    query BuscarRestaurantes($limit: Int, $offset: Int) {
+  lojas(limit: $limit, offset: $offset) {
+    _id
+    nome
+    banner
+  }
+}
+    `;
+
+/**
+ * __useBuscarRestaurantesQuery__
+ *
+ * To run a query within a React component, call `useBuscarRestaurantesQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBuscarRestaurantesQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBuscarRestaurantesQuery({
+ *   variables: {
+ *      limit: // value for 'limit'
+ *      offset: // value for 'offset'
+ *   },
+ * });
+ */
+export function useBuscarRestaurantesQuery(baseOptions?: Apollo.QueryHookOptions<BuscarRestaurantesQuery, BuscarRestaurantesQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BuscarRestaurantesQuery, BuscarRestaurantesQueryVariables>(BuscarRestaurantesDocument, options);
+      }
+export function useBuscarRestaurantesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BuscarRestaurantesQuery, BuscarRestaurantesQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BuscarRestaurantesQuery, BuscarRestaurantesQueryVariables>(BuscarRestaurantesDocument, options);
+        }
+export type BuscarRestaurantesQueryHookResult = ReturnType<typeof useBuscarRestaurantesQuery>;
+export type BuscarRestaurantesLazyQueryHookResult = ReturnType<typeof useBuscarRestaurantesLazyQuery>;
+export type BuscarRestaurantesQueryResult = Apollo.QueryResult<BuscarRestaurantesQuery, BuscarRestaurantesQueryVariables>;
 export type CategoriaKeySpecifier = ('_id' | 'nome' | 'conta' | 'produtos' | CategoriaKeySpecifier)[];
 export type CategoriaFieldPolicy = {
 	_id?: FieldPolicy<any> | FieldReadFunction<any>,

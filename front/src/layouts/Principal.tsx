@@ -11,7 +11,6 @@ const useStyles = makeStyles((theme) => ({
   appBarSpacer: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    height: '100vh',
     overflow: 'auto',
   },
   container: {
@@ -42,9 +41,7 @@ const Principal: React.FC<Props> = (props) => {
   const classes = useStyles();
 
   return (
-    <div
-      className={classes.root}
-    >
+    <div className={classes.root}>
       <CssBaseline />
       {props.toolbar
         ? props.toolbar({
@@ -57,13 +54,13 @@ const Principal: React.FC<Props> = (props) => {
         open={menuAberto}
         setOpen={setMenuAberto}
       />
-      <main className={clsx(
+      <div className={clsx(
         classes.content,
         classes.contentShift
       )}>
         <div className={classes.appBarSpacer} />
-        {props.children}
-      </main>
+        <div> {props.children} </div>
+      </div>
     </div>
   );
 }

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -w src --ext ts --exec ts-node src/index.ts",
-    "dev": "lerna run start --parallel"
+    "dev": "lerna run start --parallel",
+    "server": "npm run --prefix functions dev",
+    "serve": "npm run --prefix front start"
   },
   "devDependencies": {
     "lerna": "^4.0.0",

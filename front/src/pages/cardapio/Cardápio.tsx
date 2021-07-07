@@ -1,5 +1,6 @@
 import {
     Avatar,
+    CircularProgress,
     Grid,
     IconButton,
     List,
@@ -14,7 +15,8 @@ import {
 import { AddCircleOutlined } from "@material-ui/icons"
 import {
     Pencil,
-    Store
+    Store,
+    StoreRemove
 } from 'mdi-material-ui'
 import { useState } from "react"
 import { useDrop } from 'react-dnd'
@@ -74,14 +76,46 @@ export const Cardapio: React.FC<CardapioProps> = ({
         ],
     }))
 
-    if (loading) {
-        return <div>carregando...</div>
-    }
-    if (error || !loja) {
-        return <div>{error ? error.message : 'Erro ao buscar o restaurante'}</div>
-    }
-    return (
-        <Grid container>
+    const Conteudo = () => {
+        if (loading) {
+            return <>
+                <Grid
+                    item
+                    style={{
+                        margin: theme.spacing(2),
+                        textAlign: 'center',
+                    }}
+                    xs={12}
+                >
+                    <CircularProgress size={64} style={{ color: 'grey' }} color="inherit"/>
+                </Grid>
+                <Grid item xs={12} style={{ textAlign: 'center' }}>
+                    <Typography component="h3" variant="h6" style={{ color: 'grey' }}>
+                        Procurando restaurante...
+                    </Typography>
+                </Grid>
+            </>
+        }
+        if (error || !loja) {
+            return <>
+                <Grid
+                    item
+                    style={{
+                        margin: theme.spacing(2),
+                        textAlign: 'center',
+                    }}
+                    xs={12}
+                >
+                    <StoreRemove style={{ fontSize: '64px', color: 'grey' }}/>
+                </Grid>
+                <Grid item xs={12} style={{ textAlign: 'center' }}>
+                    <Typography component="h3" variant="h6">
+                        {error ? error.message : 'Erro ao buscar o restaurante'}
+                    </Typography>
+                </Grid>
+            </>
+        }
+        return (
             <Grid item xs={12} >
                 <List style={{
                     position: 'relative',
@@ -160,6 +194,12 @@ export const Cardapio: React.FC<CardapioProps> = ({
                     </Grow> */}
                 </List>
             </Grid>
+        )
+    }
+
+    return (
+        <Grid container>
+            <Conteudo/>
         </Grid>
     )
 }

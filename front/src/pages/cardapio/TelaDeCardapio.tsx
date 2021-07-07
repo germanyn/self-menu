@@ -79,7 +79,7 @@ function TelaDeCardapio() {
             }
             style={{ marginBottom: theme.mixins.toolbar.minHeight }}
         >
-            <Container maxWidth="sm" disableGutters>
+            <Container maxWidth="sm" disableGutters component="main">
                 <Cardapio
                     idRestaurante={idRestaurante}
                     mostraEdicao={mostraEdicao}

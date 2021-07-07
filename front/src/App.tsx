@@ -6,6 +6,8 @@ import { AutenticacaoProvider } from './contexts/autenticacao'
 import TelaDeCardapio from './pages/cardapio/TelaDeCardapio'
 import TelaDeCadastro from './pages/TelaDeCadastro'
 import TelaDeLogin from './pages/TelaDeLogin'
+import TelaDeRestaurantes from './pages/TelaDeRestaurantes'
+import TelaDeSobre from './pages/TelaDeSobre'
 
 function App() {
 	return (
@@ -27,6 +29,12 @@ function App() {
 							</Route>
 							<Route path="/">
 								<Switch>
+									<Route path="/sobre">
+										<TelaDeSobre/>
+									</Route>
+									<Route path="/restaurantes">
+										<TelaDeRestaurantes/>
+									</Route>
 									<Route path="/:idRestaurante">
 										<TelaDeCardapio/>
 									</Route>
