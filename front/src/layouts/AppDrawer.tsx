@@ -76,6 +76,8 @@ export default function AppDrawer({
       <Divider style={{ marginTop: 'auto' }} />
       <ListItem
         button
+        component={Link}
+        to="/sobre"
       >
         <ListItemIcon>
           <HelpCircleOutline/>

@@ -213,7 +213,7 @@ const CardDeProduto: React.FC<Props> = ({
         <div
           style={{
             position: 'absolute',
-            top: 0,
+            [produto.urlDoPrato ? 'bottom' : 'top']:  0,
             right: theme.spacing(2),
           }}
         >

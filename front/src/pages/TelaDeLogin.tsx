@@ -93,7 +93,6 @@ export default function TelaDeLogin() {
                             history.push(`/${conta.lojas[0]._id}`)
                         } catch (error) {
                             alert(error)
-                        } finally {
                             setSubmitting(false)
                         }
                     }}

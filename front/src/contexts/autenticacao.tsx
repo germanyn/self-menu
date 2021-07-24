@@ -39,6 +39,7 @@ export const AutenticacaoProvider: React.FC = ({ children }) => {
         }
         localStorage.setItem(APP_USER, JSON.stringify(usuarioLogado));
         localStorage.setItem(APP_TOKEN, registro.token);
+        setUsuario(usuarioLogado)
         setToken(registro.token)
     }
     const deslogar = () => {
