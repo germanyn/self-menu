@@ -1,0 +1,3 @@
+mutation LerSolicitacoes($idRestaurante: String!) {
+    lerSolicitacoes(idRestaurante: $idRestaurante)
+}

@@ -2,7 +2,7 @@ import { AppBar, IconButton, makeStyles, Toolbar, Typography } from '@material-u
 import MenuIcon from '@material-ui/icons/Menu';
 import clsx from 'clsx';
 import React from 'react';
-import { drawerWidth } from './constantes';
+import { drawerWidth } from '../utils/constantes';
 
 export const useToolbarStyles = makeStyles((theme) => ({
     toolbar: {

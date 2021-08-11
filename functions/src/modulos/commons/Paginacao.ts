@@ -8,3 +8,8 @@ export class PaginacaoArgs {
   @Field(type => Int, { nullable: true })
   offset?: number;
 }
+
+export enum Ordenacao {
+  asc = 'asc',
+  desc = 'desc',
+}

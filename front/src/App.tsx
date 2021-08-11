@@ -3,48 +3,72 @@ import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import './App.css'
 import ApplicationApollo from './contexts/ApplicationApollo'
 import { AutenticacaoProvider } from './contexts/autenticacao'
+import { NotificacaoProvider } from './contexts/NotificacaoContext'
 import TelaDeCardapio from './pages/cardapio/TelaDeCardapio'
 import TelaDeCadastro from './pages/TelaDeCadastro'
 import TelaDeLogin from './pages/TelaDeLogin'
 import TelaDeRestaurantes from './pages/TelaDeRestaurantes'
 import TelaDeSobre from './pages/TelaDeSobre'
+import { createTheme, ThemeProvider } from '@material-ui/core/styles'
+import TelaDeCampainha from './pages/TelaDeCampainha'
 
 function App() {
+	const theme = createTheme()
 	return (
-		<AutenticacaoProvider>
-			<ApplicationApollo>
-				<ConfirmProvider defaultOptions={{
-					title: 'Tem certeza?',
-					cancellationText: 'Não',
-					confirmationText: 'Sim',
-				}}>
-					<BrowserRouter>
-						<Switch>
-							<Redirect path="/" exact to="/entrar" />
-							<Route path="/entrar" exact>
-								<TelaDeLogin/>
-							</Route>
-							<Route path="/registrar" exact>
-								<TelaDeCadastro/>
-							</Route>
-							<Route path="/">
+		<ThemeProvider theme={theme}>
+			<AutenticacaoProvider>
+				<ApplicationApollo>
+					<NotificacaoProvider>
+						<ConfirmProvider defaultOptions={{
+							title: 'Tem certeza?',
+							cancellationText: 'Não',
+							confirmationText: 'Sim',
+						}}>
+							<BrowserRouter>
 								<Switch>
-									<Route path="/sobre">
-										<TelaDeSobre/>
-									</Route>
-									<Route path="/restaurantes">
-										<TelaDeRestaurantes/>
-									</Route>
-									<Route path="/:idRestaurante">
-										<TelaDeCardapio/>
-									</Route>
+									<Redirect path="/" exact to="/sobre" />
+									<Route
+										path="/entrar"
+										exact
+										component={TelaDeLogin}
+									/>
+									<Route
+										path="/registrar"
+										exact
+										component={TelaDeCadastro}
+									/>
+									<Route
+										path="/sobre"
+										exact
+										component={TelaDeSobre}
+									/>
+									<Route
+										path="/restaurantes"
+										exact
+										component={TelaDeRestaurantes}
+									/>
+									<Route
+										path="/:idRestaurante"
+										render={({ match: { path } }) => (
+											<Switch>
+												<Route
+													path={`${path}/campainha`}
+													component={TelaDeCampainha}	
+												/>
+												<Route
+													path={`${path}`}
+													component={TelaDeCardapio}	
+												/>
+											</Switch>
+										)}
+									/>
 								</Switch>
-							</Route>
-						</Switch>
-					</BrowserRouter>
-				</ConfirmProvider>
-			</ApplicationApollo>
-		</AutenticacaoProvider>
+							</BrowserRouter>
+						</ConfirmProvider>
+					</NotificacaoProvider>
+				</ApplicationApollo>
+			</AutenticacaoProvider>
+		</ThemeProvider>
 	)
 }
 

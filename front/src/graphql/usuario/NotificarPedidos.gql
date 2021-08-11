@@ -1,0 +1,9 @@
+mutation NotificarPedidos(
+  $token: String!
+  $idRestaurante: String!
+){
+  subscreverNotificacaoDePedidos(
+    idRestaurante: $idRestaurante
+    token: $token
+  )
+}

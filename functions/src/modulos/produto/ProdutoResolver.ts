@@ -52,8 +52,7 @@ export class ProdutoResolver implements ResolverInterface<Produto> {
     await ProdutoModel.findByIdAndDelete(id)
     await CategoriaModel.updateMany({}, {
       $pull: { produtos: id },
-    }
-    )
+    })
     return true
   }
 

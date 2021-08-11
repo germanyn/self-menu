@@ -1,0 +1,3 @@
+mutation ExcluirSolicitacao($id: String!){
+  excluirSolicitacao(id: $id)
+}

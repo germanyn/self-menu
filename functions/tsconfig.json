@@ -13,7 +13,7 @@
     "baseUrl": "./src",
     "skipLibCheck": true,
     "noUnusedLocals": true,
-    "outDir": "lib",
+    "outDir": "dist",
   },
   "compileOnSave": true,
   "include": [

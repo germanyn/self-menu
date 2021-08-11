@@ -1,9 +1,10 @@
-import { IconButton, makeStyles } from '@material-ui/core'
+import { IconButton } from '@material-ui/core'
 import clsx from 'clsx'
 import { useHistory } from 'react-router-dom'
 import ChevronLeft from '@material-ui/icons/ChevronLeft';
+import { makeStyles } from '@material-ui/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
     menuButton: {
       marginRight: 36,
     },

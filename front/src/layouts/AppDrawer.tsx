@@ -6,9 +6,9 @@ import { HelpCircleOutline, LoginVariant, LogoutVariant } from 'mdi-material-ui'
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAutenticacao } from '../contexts/autenticacao';
-import { drawerWidth } from './constantes';
+import { drawerWidth } from '../utils/constantes';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
     toolbarIcon: {
       display: 'flex',
       alignItems: 'center',

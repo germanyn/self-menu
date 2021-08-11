@@ -10,6 +10,7 @@ export type UsuarioLogado = {
     id: string
     nome: string
     conta: string
+    restaurante: string
 }
 
 interface AutenticacaoContextData {
@@ -36,6 +37,7 @@ export const AutenticacaoProvider: React.FC = ({ children }) => {
             conta: registro.usuario.contas[0]._id,
             id: registro.usuario._id,
             nome: registro.usuario.nome,
+            restaurante: registro.usuario.contas[0].lojas[0]._id,
         }
         localStorage.setItem(APP_USER, JSON.stringify(usuarioLogado));
         localStorage.setItem(APP_TOKEN, registro.token);

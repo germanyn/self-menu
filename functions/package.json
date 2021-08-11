@@ -4,7 +4,7 @@
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
-    "dev": "./node_modules/.bin/tsc --watch | firebase serve --only functions",
+    "dev": "export GOOGLE_APPLICATION_CREDENTIALS=./self-menu-bc1bab370c53.json && ./node_modules/.bin/tsc --watch | firebase serve --only functions",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
@@ -13,7 +13,7 @@
   "engines": {
     "node": "14"
   },
-  "main": "lib/functions.js",
+  "main": "dist/functions.js",
   "dependencies": {
     "@typegoose/typegoose": "^7.6.1",
     "apollo-server": "^2.9.16",
@@ -30,6 +30,7 @@
     "migrate-mongoose": "^4.0.0",
     "mongodb": "^3.6.9",
     "mongoose": "^5.12.14",
+    "mongoose-delete": "^0.5.3",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^0.17.6"
   },
@@ -40,6 +41,7 @@
     "@types/jsonwebtoken": "^8.5.1",
     "@types/mongodb": "^3.6.18",
     "@types/mongoose": "^5.11.97",
+    "@types/mongoose-delete": "^0.5.5",
     "firebase-functions-test": "^0.2.0",
     "lerna": "^4.0.0",
     "nodemon": "^2.0.2",

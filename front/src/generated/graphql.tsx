@@ -13,6 +13,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
+  DateTime: any;
 };
 
 export type Autenticacao = {
@@ -40,6 +42,12 @@ export type CriacaoDeCategoria = {
   nome: Scalars['String'];
   lojaId: Scalars['String'];
 };
+
+export type CriacaoDeSolicitacaoDeGarcom = {
+  idRestaurante: Scalars['String'];
+  mesa?: Maybe<Scalars['String']>;
+};
+
 
 export type EdicaoDeCategoria = {
   nome: Scalars['String'];
@@ -114,10 +122,14 @@ export type Mutation = {
   criarProduto: Produto;
   editarProduto: Produto;
   excluirProduto: Scalars['Boolean'];
+  subscreverNotificacaoDePedidos: Scalars['Boolean'];
   criarCategoria: Categoria;
   editarCategoria: Categoria;
   deletarCategoria: Scalars['Boolean'];
   moverProdutoEntreCategorias: Scalars['Boolean'];
+  solicitarGarcom: SolicitacaoDeGarcom;
+  lerSolicitacoes: Scalars['Boolean'];
+  excluirSolicitacao: Scalars['Boolean'];
 };
 
 
@@ -175,6 +187,12 @@ export type MutationExcluirProdutoArgs = {
 };
 
 
+export type MutationSubscreverNotificacaoDePedidosArgs = {
+  idRestaurante: Scalars['String'];
+  token: Scalars['String'];
+};
+
+
 export type MutationCriarCategoriaArgs = {
   categoria: CriacaoDeCategoria;
 };
@@ -198,6 +216,30 @@ export type MutationMoverProdutoEntreCategoriasArgs = {
   idCategoria: Scalars['String'];
 };
 
+
+export type MutationSolicitarGarcomArgs = {
+  solicitacao: CriacaoDeSolicitacaoDeGarcom;
+};
+
+
+export type MutationLerSolicitacoesArgs = {
+  idRestaurante: Scalars['String'];
+};
+
+
+export type MutationExcluirSolicitacaoArgs = {
+  id: Scalars['String'];
+};
+
+export enum Ordenacao {
+  Asc = 'asc',
+  Desc = 'desc'
+}
+
+export type OrdenacaoDaSolicitacao = {
+  criadoEm?: Maybe<Ordenacao>;
+};
+
 export type Produto = {
   __typename?: 'Produto';
   _id: Scalars['ID'];
@@ -218,6 +260,7 @@ export type Query = {
   produto: Produto;
   usuarios: Array<Usuario>;
   usuario: Usuario;
+  solicitacoes: Array<SolicitacaoDeGarcom>;
 };
 
 
@@ -246,10 +289,28 @@ export type QueryUsuarioArgs = {
   id: Scalars['String'];
 };
 
+
+export type QuerySolicitacoesArgs = {
+  ordenarPor?: Maybe<OrdenacaoDaSolicitacao>;
+  idRestaurante: Scalars['String'];
+  limit?: Maybe<Scalars['Int']>;
+  offset?: Maybe<Scalars['Int']>;
+};
+
 export type RegistroDeConta = {
   __typename?: 'RegistroDeConta';
   token: Scalars['String'];
   usuario: Usuario;
+};
+
+export type SolicitacaoDeGarcom = {
+  __typename?: 'SolicitacaoDeGarcom';
+  _id: Scalars['ID'];
+  loja: Loja;
+  mesa?: Maybe<Scalars['String']>;
+  lido?: Maybe<Scalars['Boolean']>;
+  criadoEm: Scalars['DateTime'];
+  atualizadoEm: Scalars['DateTime'];
 };
 
 export type Usuario = {
@@ -479,6 +540,63 @@ export type BuscarRestaurantesQuery = (
     { __typename?: 'Loja' }
     & Pick<Loja, '_id' | 'nome' | 'banner'>
   )> }
+);
+
+export type BuscarSolicitacoesDeGarcomQueryVariables = Exact<{
+  idRestaurante: Scalars['String'];
+}>;
+
+
+export type BuscarSolicitacoesDeGarcomQuery = (
+  { __typename?: 'Query' }
+  & { solicitacoes: Array<(
+    { __typename?: 'SolicitacaoDeGarcom' }
+    & Pick<SolicitacaoDeGarcom, '_id' | 'mesa' | 'criadoEm' | 'lido'>
+  )> }
+);
+
+export type ExcluirSolicitacaoMutationVariables = Exact<{
+  id: Scalars['String'];
+}>;
+
+
+export type ExcluirSolicitacaoMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'excluirSolicitacao'>
+);
+
+export type LerSolicitacoesMutationVariables = Exact<{
+  idRestaurante: Scalars['String'];
+}>;
+
+
+export type LerSolicitacoesMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'lerSolicitacoes'>
+);
+
+export type SolicitarGarcomMutationVariables = Exact<{
+  solicitacao: CriacaoDeSolicitacaoDeGarcom;
+}>;
+
+
+export type SolicitarGarcomMutation = (
+  { __typename?: 'Mutation' }
+  & { solicitarGarcom: (
+    { __typename?: 'SolicitacaoDeGarcom' }
+    & Pick<SolicitacaoDeGarcom, '_id'>
+  ) }
+);
+
+export type NotificarPedidosMutationVariables = Exact<{
+  token: Scalars['String'];
+  idRestaurante: Scalars['String'];
+}>;
+
+
+export type NotificarPedidosMutation = (
+  { __typename?: 'Mutation' }
+  & Pick<Mutation, 'subscreverNotificacaoDePedidos'>
 );
 
 export const LoginFragmentDoc = gql`
@@ -1004,6 +1122,171 @@ export function useBuscarRestaurantesLazyQuery(baseOptions?: Apollo.LazyQueryHoo
 export type BuscarRestaurantesQueryHookResult = ReturnType<typeof useBuscarRestaurantesQuery>;
 export type BuscarRestaurantesLazyQueryHookResult = ReturnType<typeof useBuscarRestaurantesLazyQuery>;
 export type BuscarRestaurantesQueryResult = Apollo.QueryResult<BuscarRestaurantesQuery, BuscarRestaurantesQueryVariables>;
+export const BuscarSolicitacoesDeGarcomDocument = gql`
+    query BuscarSolicitacoesDeGarcom($idRestaurante: String!) {
+  solicitacoes(idRestaurante: $idRestaurante, ordenarPor: {criadoEm: desc}) {
+    _id
+    mesa
+    criadoEm
+    lido
+  }
+}
+    `;
+
+/**
+ * __useBuscarSolicitacoesDeGarcomQuery__
+ *
+ * To run a query within a React component, call `useBuscarSolicitacoesDeGarcomQuery` and pass it any options that fit your needs.
+ * When your component renders, `useBuscarSolicitacoesDeGarcomQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useBuscarSolicitacoesDeGarcomQuery({
+ *   variables: {
+ *      idRestaurante: // value for 'idRestaurante'
+ *   },
+ * });
+ */
+export function useBuscarSolicitacoesDeGarcomQuery(baseOptions: Apollo.QueryHookOptions<BuscarSolicitacoesDeGarcomQuery, BuscarSolicitacoesDeGarcomQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<BuscarSolicitacoesDeGarcomQuery, BuscarSolicitacoesDeGarcomQueryVariables>(BuscarSolicitacoesDeGarcomDocument, options);
+      }
+export function useBuscarSolicitacoesDeGarcomLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<BuscarSolicitacoesDeGarcomQuery, BuscarSolicitacoesDeGarcomQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<BuscarSolicitacoesDeGarcomQuery, BuscarSolicitacoesDeGarcomQueryVariables>(BuscarSolicitacoesDeGarcomDocument, options);
+        }
+export type BuscarSolicitacoesDeGarcomQueryHookResult = ReturnType<typeof useBuscarSolicitacoesDeGarcomQuery>;
+export type BuscarSolicitacoesDeGarcomLazyQueryHookResult = ReturnType<typeof useBuscarSolicitacoesDeGarcomLazyQuery>;
+export type BuscarSolicitacoesDeGarcomQueryResult = Apollo.QueryResult<BuscarSolicitacoesDeGarcomQuery, BuscarSolicitacoesDeGarcomQueryVariables>;
+export const ExcluirSolicitacaoDocument = gql`
+    mutation ExcluirSolicitacao($id: String!) {
+  excluirSolicitacao(id: $id)
+}
+    `;
+export type ExcluirSolicitacaoMutationFn = Apollo.MutationFunction<ExcluirSolicitacaoMutation, ExcluirSolicitacaoMutationVariables>;
+
+/**
+ * __useExcluirSolicitacaoMutation__
+ *
+ * To run a mutation, you first call `useExcluirSolicitacaoMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useExcluirSolicitacaoMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [excluirSolicitacaoMutation, { data, loading, error }] = useExcluirSolicitacaoMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useExcluirSolicitacaoMutation(baseOptions?: Apollo.MutationHookOptions<ExcluirSolicitacaoMutation, ExcluirSolicitacaoMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<ExcluirSolicitacaoMutation, ExcluirSolicitacaoMutationVariables>(ExcluirSolicitacaoDocument, options);
+      }
+export type ExcluirSolicitacaoMutationHookResult = ReturnType<typeof useExcluirSolicitacaoMutation>;
+export type ExcluirSolicitacaoMutationResult = Apollo.MutationResult<ExcluirSolicitacaoMutation>;
+export type ExcluirSolicitacaoMutationOptions = Apollo.BaseMutationOptions<ExcluirSolicitacaoMutation, ExcluirSolicitacaoMutationVariables>;
+export const LerSolicitacoesDocument = gql`
+    mutation LerSolicitacoes($idRestaurante: String!) {
+  lerSolicitacoes(idRestaurante: $idRestaurante)
+}
+    `;
+export type LerSolicitacoesMutationFn = Apollo.MutationFunction<LerSolicitacoesMutation, LerSolicitacoesMutationVariables>;
+
+/**
+ * __useLerSolicitacoesMutation__
+ *
+ * To run a mutation, you first call `useLerSolicitacoesMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useLerSolicitacoesMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [lerSolicitacoesMutation, { data, loading, error }] = useLerSolicitacoesMutation({
+ *   variables: {
+ *      idRestaurante: // value for 'idRestaurante'
+ *   },
+ * });
+ */
+export function useLerSolicitacoesMutation(baseOptions?: Apollo.MutationHookOptions<LerSolicitacoesMutation, LerSolicitacoesMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<LerSolicitacoesMutation, LerSolicitacoesMutationVariables>(LerSolicitacoesDocument, options);
+      }
+export type LerSolicitacoesMutationHookResult = ReturnType<typeof useLerSolicitacoesMutation>;
+export type LerSolicitacoesMutationResult = Apollo.MutationResult<LerSolicitacoesMutation>;
+export type LerSolicitacoesMutationOptions = Apollo.BaseMutationOptions<LerSolicitacoesMutation, LerSolicitacoesMutationVariables>;
+export const SolicitarGarcomDocument = gql`
+    mutation SolicitarGarcom($solicitacao: CriacaoDeSolicitacaoDeGarcom!) {
+  solicitarGarcom(solicitacao: $solicitacao) {
+    _id
+  }
+}
+    `;
+export type SolicitarGarcomMutationFn = Apollo.MutationFunction<SolicitarGarcomMutation, SolicitarGarcomMutationVariables>;
+
+/**
+ * __useSolicitarGarcomMutation__
+ *
+ * To run a mutation, you first call `useSolicitarGarcomMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useSolicitarGarcomMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [solicitarGarcomMutation, { data, loading, error }] = useSolicitarGarcomMutation({
+ *   variables: {
+ *      solicitacao: // value for 'solicitacao'
+ *   },
+ * });
+ */
+export function useSolicitarGarcomMutation(baseOptions?: Apollo.MutationHookOptions<SolicitarGarcomMutation, SolicitarGarcomMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<SolicitarGarcomMutation, SolicitarGarcomMutationVariables>(SolicitarGarcomDocument, options);
+      }
+export type SolicitarGarcomMutationHookResult = ReturnType<typeof useSolicitarGarcomMutation>;
+export type SolicitarGarcomMutationResult = Apollo.MutationResult<SolicitarGarcomMutation>;
+export type SolicitarGarcomMutationOptions = Apollo.BaseMutationOptions<SolicitarGarcomMutation, SolicitarGarcomMutationVariables>;
+export const NotificarPedidosDocument = gql`
+    mutation NotificarPedidos($token: String!, $idRestaurante: String!) {
+  subscreverNotificacaoDePedidos(idRestaurante: $idRestaurante, token: $token)
+}
+    `;
+export type NotificarPedidosMutationFn = Apollo.MutationFunction<NotificarPedidosMutation, NotificarPedidosMutationVariables>;
+
+/**
+ * __useNotificarPedidosMutation__
+ *
+ * To run a mutation, you first call `useNotificarPedidosMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useNotificarPedidosMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [notificarPedidosMutation, { data, loading, error }] = useNotificarPedidosMutation({
+ *   variables: {
+ *      token: // value for 'token'
+ *      idRestaurante: // value for 'idRestaurante'
+ *   },
+ * });
+ */
+export function useNotificarPedidosMutation(baseOptions?: Apollo.MutationHookOptions<NotificarPedidosMutation, NotificarPedidosMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<NotificarPedidosMutation, NotificarPedidosMutationVariables>(NotificarPedidosDocument, options);
+      }
+export type NotificarPedidosMutationHookResult = ReturnType<typeof useNotificarPedidosMutation>;
+export type NotificarPedidosMutationResult = Apollo.MutationResult<NotificarPedidosMutation>;
+export type NotificarPedidosMutationOptions = Apollo.BaseMutationOptions<NotificarPedidosMutation, NotificarPedidosMutationVariables>;
 export type CategoriaKeySpecifier = ('_id' | 'nome' | 'conta' | 'produtos' | CategoriaKeySpecifier)[];
 export type CategoriaFieldPolicy = {
 	_id?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1039,7 +1322,7 @@ export type LojaFieldPolicy = {
 	categorias?: FieldPolicy<any> | FieldReadFunction<any>,
 	podeEditar?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type MutationKeySpecifier = ('registrar' | 'entrar' | 'deleteConta' | 'criarLoja' | 'editarLoja' | 'deletarLoja' | 'alterarOrdemDaCategoria' | 'criarProduto' | 'editarProduto' | 'excluirProduto' | 'criarCategoria' | 'editarCategoria' | 'deletarCategoria' | 'moverProdutoEntreCategorias' | MutationKeySpecifier)[];
+export type MutationKeySpecifier = ('registrar' | 'entrar' | 'deleteConta' | 'criarLoja' | 'editarLoja' | 'deletarLoja' | 'alterarOrdemDaCategoria' | 'criarProduto' | 'editarProduto' | 'excluirProduto' | 'subscreverNotificacaoDePedidos' | 'criarCategoria' | 'editarCategoria' | 'deletarCategoria' | 'moverProdutoEntreCategorias' | 'solicitarGarcom' | 'lerSolicitacoes' | 'excluirSolicitacao' | MutationKeySpecifier)[];
 export type MutationFieldPolicy = {
 	registrar?: FieldPolicy<any> | FieldReadFunction<any>,
 	entrar?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1051,10 +1334,14 @@ export type MutationFieldPolicy = {
 	criarProduto?: FieldPolicy<any> | FieldReadFunction<any>,
 	editarProduto?: FieldPolicy<any> | FieldReadFunction<any>,
 	excluirProduto?: FieldPolicy<any> | FieldReadFunction<any>,
+	subscreverNotificacaoDePedidos?: FieldPolicy<any> | FieldReadFunction<any>,
 	criarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
 	editarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
 	deletarCategoria?: FieldPolicy<any> | FieldReadFunction<any>,
-	moverProdutoEntreCategorias?: FieldPolicy<any> | FieldReadFunction<any>
+	moverProdutoEntreCategorias?: FieldPolicy<any> | FieldReadFunction<any>,
+	solicitarGarcom?: FieldPolicy<any> | FieldReadFunction<any>,
+	lerSolicitacoes?: FieldPolicy<any> | FieldReadFunction<any>,
+	excluirSolicitacao?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type ProdutoKeySpecifier = ('_id' | 'nome' | 'descricao' | 'preco' | 'urlDoPrato' | 'conta' | ProdutoKeySpecifier)[];
 export type ProdutoFieldPolicy = {
@@ -1065,7 +1352,7 @@ export type ProdutoFieldPolicy = {
 	urlDoPrato?: FieldPolicy<any> | FieldReadFunction<any>,
 	conta?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type QueryKeySpecifier = ('contas' | 'conta' | 'lojas' | 'loja' | 'produtos' | 'produto' | 'usuarios' | 'usuario' | QueryKeySpecifier)[];
+export type QueryKeySpecifier = ('contas' | 'conta' | 'lojas' | 'loja' | 'produtos' | 'produto' | 'usuarios' | 'usuario' | 'solicitacoes' | QueryKeySpecifier)[];
 export type QueryFieldPolicy = {
 	contas?: FieldPolicy<any> | FieldReadFunction<any>,
 	conta?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1074,12 +1361,22 @@ export type QueryFieldPolicy = {
 	produtos?: FieldPolicy<any> | FieldReadFunction<any>,
 	produto?: FieldPolicy<any> | FieldReadFunction<any>,
 	usuarios?: FieldPolicy<any> | FieldReadFunction<any>,
-	usuario?: FieldPolicy<any> | FieldReadFunction<any>
+	usuario?: FieldPolicy<any> | FieldReadFunction<any>,
+	solicitacoes?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type RegistroDeContaKeySpecifier = ('token' | 'usuario' | RegistroDeContaKeySpecifier)[];
 export type RegistroDeContaFieldPolicy = {
 	token?: FieldPolicy<any> | FieldReadFunction<any>,
 	usuario?: FieldPolicy<any> | FieldReadFunction<any>
+};
+export type SolicitacaoDeGarcomKeySpecifier = ('_id' | 'loja' | 'mesa' | 'lido' | 'criadoEm' | 'atualizadoEm' | SolicitacaoDeGarcomKeySpecifier)[];
+export type SolicitacaoDeGarcomFieldPolicy = {
+	_id?: FieldPolicy<any> | FieldReadFunction<any>,
+	loja?: FieldPolicy<any> | FieldReadFunction<any>,
+	mesa?: FieldPolicy<any> | FieldReadFunction<any>,
+	lido?: FieldPolicy<any> | FieldReadFunction<any>,
+	criadoEm?: FieldPolicy<any> | FieldReadFunction<any>,
+	atualizadoEm?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type UsuarioKeySpecifier = ('_id' | 'nome' | 'login' | 'email' | 'contas' | UsuarioKeySpecifier)[];
 export type UsuarioFieldPolicy = {
@@ -1121,6 +1418,10 @@ export type TypedTypePolicies = TypePolicies & {
 	RegistroDeConta?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | RegistroDeContaKeySpecifier | (() => undefined | RegistroDeContaKeySpecifier),
 		fields?: RegistroDeContaFieldPolicy,
+	},
+	SolicitacaoDeGarcom?: Omit<TypePolicy, "fields" | "keyFields"> & {
+		keyFields?: false | SolicitacaoDeGarcomKeySpecifier | (() => undefined | SolicitacaoDeGarcomKeySpecifier),
+		fields?: SolicitacaoDeGarcomFieldPolicy,
 	},
 	Usuario?: Omit<TypePolicy, "fields" | "keyFields"> & {
 		keyFields?: false | UsuarioKeySpecifier | (() => undefined | UsuarioKeySpecifier),

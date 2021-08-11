@@ -1,0 +1,13 @@
+query BuscarSolicitacoesDeGarcom($idRestaurante: String!) {
+    solicitacoes(
+        idRestaurante: $idRestaurante
+        ordenarPor: {
+            criadoEm: desc
+        }
+    ) {
+        _id
+        mesa
+        criadoEm
+        lido
+    }
+}

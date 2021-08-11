@@ -6,10 +6,10 @@ import {
     makeStyles,
     useTheme
 } from '@material-ui/core';
-import { Plus } from 'mdi-material-ui';
+import { Hand, Plus } from 'mdi-material-ui';
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation, useParams } from "react-router-dom";
-import { useBuscarCardapioQuery } from "../../generated/graphql";
+import { useBuscarCardapioQuery, useSolicitarGarcomMutation } from "../../generated/graphql";
 import Principal from "../../layouts/Principal";
 import Cardapio from './Cardápio';
 import DialogoDeEditarCategoria from './categoria/DialogoDeEditarCategoria';
@@ -40,6 +40,7 @@ function TelaDeCardapio() {
         setMostraCriarCategoria,
         salvando,
     } = useCardapio()
+    const [solicitarGarcom] = useSolicitarGarcomMutation()
     const produto = typeof produtoDaQuery === 'string'
         ? produtoDaQuery
         : undefined
@@ -47,6 +48,16 @@ function TelaDeCardapio() {
     const buscaDeCardapio = useBuscarCardapioQuery({
         variables: { idRestaurante },
     })
+
+    const fazerUmaSolicitacao = () => {
+        solicitarGarcom({
+            variables: {
+                solicitacao: {
+                    idRestaurante,
+                }
+            }
+        })
+    }
 
     const { data } = buscaDeCardapio
 
@@ -96,14 +107,24 @@ function TelaDeCardapio() {
             }}
             {...buscaDeCardapio}
         /> */}
-        {mostraEdicao && <Fab
-            color="primary"
-            aria-label="Adicionar"
-            onClick={() => setMostraCriarCategoria(true)}
-            className={classes.fab}
-        >
-            <Plus/>
-        </Fab>}
+        {mostraEdicao
+            ? <Fab
+                color="primary"
+                aria-label="Adicionar"
+                onClick={() => setMostraCriarCategoria(true)}
+                className={classes.fab}
+            >
+                <Plus/>
+            </Fab>
+            : <Fab
+                color="primary"
+                aria-label="Solicitar Garçom"
+                onClick={() => fazerUmaSolicitacao()}
+                className={classes.fab}
+            >
+                <Hand/>
+            </Fab>
+        }
         {produto && <DetalhesDoProduto
             id={produto}
             aberto={!!produto}

@@ -1,6 +1,8 @@
-import { Arg, Authorized, FieldResolver, Query, Resolver, ResolverInterface, Root } from "type-graphql";
+import { Context } from "infraestrutura/context";
+import { Arg, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, ResolverInterface, Root } from "type-graphql";
 import { UsuarioModel } from "../models";
 import { Usuario } from "./Usuario";
+import admin from 'firebase-admin'
 
 @Resolver(() => Usuario)
 export class UsuarioResolver implements ResolverInterface<Usuario> {
@@ -26,5 +28,17 @@ export class UsuarioResolver implements ResolverInterface<Usuario> {
       },
     })
     return retorno.contas
+  }
+
+  @Mutation(() => Boolean)
+  @Authorized()
+  async subscreverNotificacaoDePedidos(
+    @Ctx() context: Context,
+    @Arg("token") token: string,
+    @Arg("idRestaurante") idRestaurante: string
+  ) {
+    if (!context.user) throw new Error('Nenhum usuário autenticado')
+    await admin.messaging().subscribeToTopic(token, idRestaurante)
+    return true
   }
 }

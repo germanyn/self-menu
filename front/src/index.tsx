@@ -1,8 +1,10 @@
-import React from 'react';
+import './configs/firebase'
+import './configs/dayjs'
 import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import { AplicationDragAndDrop } from './pages/cardapio/arrastaveis/DragAndDropContext';
+
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(

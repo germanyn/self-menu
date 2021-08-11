@@ -1,0 +1,5 @@
+mutation SolicitarGarcom($solicitacao: CriacaoDeSolicitacaoDeGarcom!) {
+  solicitarGarcom(solicitacao: $solicitacao) {
+    _id
+  }
+}

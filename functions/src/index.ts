@@ -1,4 +1,5 @@
 import "reflect-metadata"
+import { initFirebaseApp } from "./utils/firebaseUtils"
 import { ApolloServer } from "apollo-server-express"
 import { criarConexaoComBanco } from "./database"
 import { SECRET, TokenPayload } from "./infraestrutura/autenticacao"
@@ -9,7 +10,10 @@ import jwt = require('express-jwt')
 const app = express()
 
 export default async function main() {
-  await criarConexaoComBanco()
+  await Promise.all([
+    criarConexaoComBanco(),
+    initFirebaseApp(),
+  ])
 
   const path = "/graphql"
 

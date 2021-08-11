@@ -151,7 +151,7 @@ export default function TelaDeSobre() {
             </Container>
             {/* End hero unit */}
             <Container maxWidth="md" component="main">
-                <Grid container spacing={5} justify="center" alignItems="flex-end">
+                <Grid container spacing={5} justifyContent="center" alignItems="flex-end">
                     {tiers.map((tier) => (
                         // Enterprise card is full width at sm breakpoint
                         <Grid item key={tier.title} xs={12} sm={tier.title === 'Enterprise' ? 12 : 6} md={4}>

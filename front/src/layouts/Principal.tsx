@@ -2,6 +2,8 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { makeStyles } from '@material-ui/core/styles';
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
+import BotaoDeNotificacao from '../components/BotaoDeNotificacao';
+import { useAutenticacao } from '../contexts/autenticacao';
 import AppDrawer from "./AppDrawer";
 
 const useStyles = makeStyles((theme) => ({
@@ -39,6 +41,7 @@ type Props = {
 const Principal: React.FC<Props> = (props) => {
   const [menuAberto, setMenuAberto] = React.useState(false);
   const classes = useStyles();
+  const { logado } = useAutenticacao()
 
   return (
     <div className={classes.root}>
@@ -61,6 +64,7 @@ const Principal: React.FC<Props> = (props) => {
         <div className={classes.appBarSpacer} />
         <div> {props.children} </div>
       </div>
+      {logado && <BotaoDeNotificacao />}
     </div>
   );
 }
