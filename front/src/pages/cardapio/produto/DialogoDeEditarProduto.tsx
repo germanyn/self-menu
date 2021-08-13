@@ -11,7 +11,7 @@ import {
     useCriarProdutoMutation,
     useEditarProdutoMutation,
 } from '../../../generated/graphql';
-import { usePrevious } from '../../../utils';
+import { usePrevious } from "../../../utils/reactUtils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

@@ -1,20 +1,19 @@
 import { useApolloClient } from "@apollo/client";
-import * as serviceWorkerRegistration from '../configs/serviceWorkerRegistration'
+import firebase from 'firebase';
+import cloneDeep from 'lodash.clonedeep';
 import { createContext, useContext, useEffect, useState } from "react";
 import { messaging, onMessageListener } from "../configs/firebase";
-import { useAutenticacao } from './autenticacao';
+import * as serviceWorkerRegistration from '../configs/serviceWorkerRegistration';
 import {
+	BuscarSolicitacoesDeGarcomDocument,
+	BuscarSolicitacoesDeGarcomQuery,
 	SolicitacaoDeGarcom,
 	useBuscarSolicitacoesDeGarcomLazyQuery,
-	useNotificarPedidosMutation,
-	BuscarSolicitacoesDeGarcomQuery,
-	BuscarSolicitacoesDeGarcomDocument,
 	useExcluirSolicitacaoMutation,
 	useLerSolicitacoesMutation,
-	Ordenacao,
-} from '../generated/graphql'
-import firebase from 'firebase'
-import cloneDeep from 'lodash.clonedeep'
+	useNotificarPedidosMutation,
+} from '../generated/graphql';
+import { useAutenticacao } from './autenticacao';
 
 const AUDIO_URL = '/sounds/mixkit-small-door-bell-589.wav'
 
@@ -201,6 +200,7 @@ export const NotificacaoProvider: React.FC = ({ children }) => {
 			if (window.Notification.permission !== 'granted') return
 			subscreverPedidos();
 		});
+		// eslint-disable-next-line
 	}, [registration])
 
 	const excluirSolicitacao = async (id: string) => {

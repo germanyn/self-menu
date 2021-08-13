@@ -175,7 +175,7 @@ export default function TelaDeLogin() {
                             >
                                 Entrar
                             </Button>
-                            <Grid container justify="flex-end">
+                            <Grid container justifyContent="flex-end">
                                 <Grid item>
                                     <Link to="/registrar">
                                         Não possui uma conta? Cadastre aqui

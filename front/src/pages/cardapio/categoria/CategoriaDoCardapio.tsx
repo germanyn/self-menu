@@ -149,6 +149,7 @@ export const Cardapio: React.FC<CardapioProps> = ({
                 <ListItemText onClick={() => setRecolhido(!recolhido)}>
                     <Typography
                         variant="h6"
+                        noWrap
                         style={{ fontSize: '1.125rem' }}
                     >
                         {categoria.nome}

@@ -1,49 +1,27 @@
 import {
-    Avatar,
-    CircularProgress,
-    Grid,
-    IconButton,
-    List,
     ListItem,
-    ListItemAvatar,
-    ListItemSecondaryAction,
-    ListItemText,
     Typography,
     useTheme,
-    Zoom
 } from "@material-ui/core"
 import { AddCircleOutlined } from "@material-ui/icons"
-import {
-    Pencil,
-    Store,
-    StoreRemove
-} from 'mdi-material-ui'
-import { useState } from "react"
+import { Fragment } from "react"
 import { useDrop } from 'react-dnd'
-import { BuscarCardapioQueryHookResult } from "../../generated/graphql"
+import { BuscarCardapioQuery } from "../../generated/graphql"
 import { ArrastaveisEnum } from "./arrastaveis/tipos"
 import CategoriaDoCardapio from "./categoria/CategoriaDoCardapio"
-import DialogoDeEditarLoja from "./loja/DialogoDeEditarLoja"
 
 type CardapioProps = {
     mostraEdicao?: boolean
     idRestaurante: string
-} & BuscarCardapioQueryHookResult
+    loja: BuscarCardapioQuery['loja']
+}
 
 export const Cardapio: React.FC<CardapioProps> = ({
-    loading,
-    error,
-    data,
+    loja,
     mostraEdicao,
     idRestaurante,
 }) => {
     const theme = useTheme()
-    const transitionDuration = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen,
-    };
-    const [mostraEdicaoDeLoja, setMostraEdicaoDeLoja] = useState(false)
-    const loja = data?.loja
     // const arrLength = loja?.categorias.length
     // const [elRefs, setElRefs] = useState<InViewHookResponse[]>([]);
     // const { setCategoriaId } = useCardapio()
@@ -76,131 +54,29 @@ export const Cardapio: React.FC<CardapioProps> = ({
         ],
     }))
 
-    const Conteudo = () => {
-        if (loading) {
-            return <>
-                <Grid
-                    item
-                    style={{
-                        margin: theme.spacing(2),
-                        textAlign: 'center',
-                    }}
-                    xs={12}
-                >
-                    <CircularProgress size={64} style={{ color: 'grey' }} color="inherit"/>
-                </Grid>
-                <Grid item xs={12} style={{ textAlign: 'center' }}>
-                    <Typography component="h3" variant="h6" style={{ color: 'grey' }}>
-                        Procurando restaurante...
-                    </Typography>
-                </Grid>
-            </>
-        }
-        if (error || !loja) {
-            return <>
-                <Grid
-                    item
-                    style={{
-                        margin: theme.spacing(2),
-                        textAlign: 'center',
-                    }}
-                    xs={12}
-                >
-                    <StoreRemove style={{ fontSize: '64px', color: 'grey' }}/>
-                </Grid>
-                <Grid item xs={12} style={{ textAlign: 'center' }}>
-                    <Typography component="h3" variant="h6">
-                        {error ? error.message : 'Erro ao buscar o restaurante'}
-                    </Typography>
-                </Grid>
-            </>
-        }
-        return (
-            <Grid item xs={12} >
-                <List style={{
-                    position: 'relative',
-                    overflow: 'auto',
-                }}>
-                    <ListItem>
-                        <ListItemAvatar>
-                            {loja.logo
-                                ? <Avatar alt="Logo do restaurante" src={loja.logo} />
-                                : <Store />
-                            }
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={loja.nome}
-                        // secondary="&nbsp;"
-                        // secondary="Mais detalhes"
-                        />
-                        <ListItemSecondaryAction>
-                            <Zoom
-                                in={mostraEdicao}
-                                timeout={transitionDuration}
-                                style={{ transitionDelay: `${transitionDuration.exit}ms` }}
-                                unmountOnExit
-                            >
-                                <IconButton
-                                    aria-label="add"
-                                    edge="end"
-                                    onClick={() => setMostraEdicaoDeLoja(true)}
-                                >
-                                    <Pencil />
-                                </IconButton>
-                            </Zoom>
-                            <DialogoDeEditarLoja
-                                id={loja._id}
-                                aberto={mostraEdicaoDeLoja}
-                                lojaInicial={{ nome: loja.nome }}
-                                onFinalizar={() => setMostraEdicaoDeLoja(false)}
-                                onFechar={() => setMostraEdicaoDeLoja(false)}
-                            />
-                        </ListItemSecondaryAction>
-                    </ListItem>
-                    {mostraEdicao && !loja.categorias.length && (
-                        <ListItem
-                            style={{
-                                minHeight: '250px',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            <Typography
-                                style={{ display: 'flex', color: 'grey' }}
-                            > Clique em&nbsp;<AddCircleOutlined style={{ color: theme.palette.primary.dark }} />&nbsp;para criar uma categoria </Typography>
-                        </ListItem>
-                    )}
-                    <div ref={drop}>
-                        {loja.categorias.map((categoria, indice) => <CategoriaDoCardapio
-                            mostraEdicao={mostraEdicao}
-                            categoria={categoria}
-                            key={categoria._id}
-                            idRestaurante={idRestaurante}
-                            indice={indice}
-                        // ref={}
-                        />)}
-                    </div>
-                    {/* <Grow in={mostraEdicao}>
-                        <ListItem style={{ paddingTop: '24px' }}>
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                startIcon={<Plus />}
-                                onClick={() => setMostraCriarCategoria(true)}
-                                style={{ flexGrow: 1 }}
-                            >
-                                Nova Categoria
-                            </Button>
-                        </ListItem>
-                    </Grow> */}
-                </List>
-            </Grid>
-        )
-    }
-
     return (
-        <Grid container>
-            <Conteudo/>
-        </Grid>
+        <Fragment>
+            {mostraEdicao && !loja.categorias.length && (
+                <ListItem
+                    style={{
+                        justifyContent: 'center',
+                    }}
+                >
+                    <Typography
+                        style={{ display: 'flex', color: 'grey' }}
+                    > Clique em&nbsp;<AddCircleOutlined style={{ color: theme.palette.primary.main }} />&nbsp;para criar uma categoria </Typography>
+                </ListItem>
+            )}
+            <div ref={drop}>
+                {loja.categorias.map((categoria, indice) => <CategoriaDoCardapio
+                    mostraEdicao={mostraEdicao}
+                    categoria={categoria}
+                    key={categoria._id}
+                    idRestaurante={idRestaurante}
+                    indice={indice}
+                />)}
+            </div>
+        </Fragment>
     )
 }
 export default Cardapio

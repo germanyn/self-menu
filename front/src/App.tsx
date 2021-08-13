@@ -1,3 +1,4 @@
+import { ThemeProvider } from '@material-ui/core/styles'
 import { ConfirmProvider } from 'material-ui-confirm'
 import { BrowserRouter, Redirect, Route, Switch } from 'react-router-dom'
 import './App.css'
@@ -9,13 +10,11 @@ import TelaDeCadastro from './pages/TelaDeCadastro'
 import TelaDeLogin from './pages/TelaDeLogin'
 import TelaDeRestaurantes from './pages/TelaDeRestaurantes'
 import TelaDeSobre from './pages/TelaDeSobre'
-import { createTheme, ThemeProvider } from '@material-ui/core/styles'
-import TelaDeCampainha from './pages/TelaDeCampainha'
+import { temaDaAplicacao } from './utils/tema'
 
 function App() {
-	const theme = createTheme()
 	return (
-		<ThemeProvider theme={theme}>
+		<ThemeProvider theme={temaDaAplicacao}>
 			<AutenticacaoProvider>
 				<ApplicationApollo>
 					<NotificacaoProvider>
@@ -51,10 +50,6 @@ function App() {
 										path="/:idRestaurante"
 										render={({ match: { path } }) => (
 											<Switch>
-												<Route
-													path={`${path}/campainha`}
-													component={TelaDeCampainha}	
-												/>
 												<Route
 													path={`${path}`}
 													component={TelaDeCardapio}	

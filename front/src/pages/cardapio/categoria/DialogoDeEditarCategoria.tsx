@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import { Form, Formik, FormikProps } from 'formik';
 import React, { useEffect, useRef, useState } from 'react';
 import { BuscarCardapioDocument, BuscarCardapioQuery, CategoriaDoCardapioFragment, CategoriaDoCardapioFragmentDoc, EdicaoDeCategoria, useCriarCategoriaMutation, useEditarCategoriaMutation } from '../../../generated/graphql';
-import { usePrevious } from '../../../utils';
+import { usePrevious } from "../../../utils/reactUtils";
 import { ArrayElement } from '../../../utils/types';
 import update from 'immutability-helper'
 

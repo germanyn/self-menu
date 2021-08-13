@@ -107,6 +107,7 @@ export type Loja = {
   banner?: Maybe<Scalars['String']>;
   logo?: Maybe<Scalars['String']>;
   categorias: Array<Categoria>;
+  coresJson?: Maybe<Scalars['String']>;
   podeEditar: Scalars['Boolean'];
 };
 
@@ -374,7 +375,7 @@ export type BuscarCardapioQuery = (
   { __typename?: 'Query' }
   & { loja: (
     { __typename?: 'Loja' }
-    & Pick<Loja, 'podeEditar' | 'banner' | 'logo'>
+    & Pick<Loja, 'podeEditar' | 'banner' | 'logo' | 'coresJson'>
     & { categorias: Array<(
       { __typename?: 'Categoria' }
       & CategoriaDoCardapioFragment
@@ -715,6 +716,7 @@ export const BuscarCardapioDocument = gql`
     categorias {
       ...CategoriaDoCardapio
     }
+    coresJson
   }
 }
     ${LojaDoCardapioFragmentDoc}
@@ -1310,7 +1312,7 @@ export type EnderecoFieldPolicy = {
 	uf?: FieldPolicy<any> | FieldReadFunction<any>,
 	complemento?: FieldPolicy<any> | FieldReadFunction<any>
 };
-export type LojaKeySpecifier = ('_id' | 'nome' | 'cnpj' | 'endereco' | 'conta' | 'banner' | 'logo' | 'categorias' | 'podeEditar' | LojaKeySpecifier)[];
+export type LojaKeySpecifier = ('_id' | 'nome' | 'cnpj' | 'endereco' | 'conta' | 'banner' | 'logo' | 'categorias' | 'coresJson' | 'podeEditar' | LojaKeySpecifier)[];
 export type LojaFieldPolicy = {
 	_id?: FieldPolicy<any> | FieldReadFunction<any>,
 	nome?: FieldPolicy<any> | FieldReadFunction<any>,
@@ -1320,6 +1322,7 @@ export type LojaFieldPolicy = {
 	banner?: FieldPolicy<any> | FieldReadFunction<any>,
 	logo?: FieldPolicy<any> | FieldReadFunction<any>,
 	categorias?: FieldPolicy<any> | FieldReadFunction<any>,
+	coresJson?: FieldPolicy<any> | FieldReadFunction<any>,
 	podeEditar?: FieldPolicy<any> | FieldReadFunction<any>
 };
 export type MutationKeySpecifier = ('registrar' | 'entrar' | 'deleteConta' | 'criarLoja' | 'editarLoja' | 'deletarLoja' | 'alterarOrdemDaCategoria' | 'criarProduto' | 'editarProduto' | 'excluirProduto' | 'subscreverNotificacaoDePedidos' | 'criarCategoria' | 'editarCategoria' | 'deletarCategoria' | 'moverProdutoEntreCategorias' | 'solicitarGarcom' | 'lerSolicitacoes' | 'excluirSolicitacao' | MutationKeySpecifier)[];

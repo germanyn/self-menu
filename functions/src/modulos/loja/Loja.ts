@@ -58,4 +58,8 @@ export class Loja {
     default: [],
   })
   categorias: Ref<Categoria>[]
+
+  @Field(() => String, { nullable: true })
+  @prop({ type: () => Schema.Types.String })
+  coresJson?: string | null
 }

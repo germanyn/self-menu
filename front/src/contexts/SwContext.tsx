@@ -1,14 +1,3 @@
-import { createContext, useContext } from "react";
-
-interface SwContextData {
-    registro: Promise<ServiceWorkerRegistration> | undefined
-    registrar?: () => Promise<ServiceWorkerRegistration | undefined>
-}
-
-const SwContext = createContext<SwContextData>({
-    registro: undefined,
-});
-
 export function register() {
     if (!('serviceWorker' in navigator)) return
 

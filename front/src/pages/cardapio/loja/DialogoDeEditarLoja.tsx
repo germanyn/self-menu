@@ -7,7 +7,7 @@ import {
     LojaDoCardapioFragmentDoc,
     useEditarLojaMutation,
 } from '../../../generated/graphql';
-import { usePrevious } from '../../../utils';
+import { usePrevious } from "../../../utils/reactUtils";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -129,7 +129,7 @@ const DialogoDeEditarLoja: React.FC<EditarProps> = ({
                             onClick={handleClose}
                             disabled={isSubmitting}
                         >
-                            Cancel
+                            Cancelar
                         </Button>
                         <Button
                             type="submit"

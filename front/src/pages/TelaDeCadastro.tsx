@@ -193,7 +193,7 @@ export default function TelaDeRegistrar() {
                             >
                                 Registrar
                             </Button>
-                            <Grid container justify="flex-end">
+                            <Grid container justifyContent="flex-end">
                                 <Grid item>
                                     <Link to="/entrar">
                                         Já tem uma conta? Entre aqui

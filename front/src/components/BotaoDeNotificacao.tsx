@@ -10,13 +10,12 @@ import {
 	ListItemAvatar,
 	ListItemSecondaryAction,
 	ListItemText,
-	Theme,
-	useTheme
+	Theme
 } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import dayjs from 'dayjs';
 import { Bell, BellOff, Delete, Hand, Sleep } from 'mdi-material-ui';
-import { Fragment, useState } from 'react';
+import { useState } from 'react';
 import { useNotificacao } from '../contexts/NotificacaoContext';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -34,7 +33,11 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 )
 
-const BotaoDeNotificacao: typeof IconButton = (props: any) => {
+type BotaoDeNotificacaoProps = {
+	style?: React.CSSProperties
+}
+
+const BotaoDeNotificacao: typeof IconButton = (props: BotaoDeNotificacaoProps) => {
 	const {
 		temToken,
 		pedirPermissao,
@@ -43,14 +46,11 @@ const BotaoDeNotificacao: typeof IconButton = (props: any) => {
 		excluirSolicitacao,
 		lerSolicitacoes,
 	} = useNotificacao()
-	const theme = useTheme()
 	const [mostraPedidos, setMostraPedidos] = useState(false)
 	const [excluindos, setExcluindos] = useState<string[]>([])
 	const classes = useStyles()
 	const notificacoesNaoLidas = solicitacoes
 		.filter(({ lido }) => !lido)
-	
-	const temNotificacoesNaoLidas = !!notificacoesNaoLidas.length
 
 	const aoExcluirSolicitacao = async (id: string) => {
 		if (excluindos.includes(id)) return
@@ -73,14 +73,7 @@ const BotaoDeNotificacao: typeof IconButton = (props: any) => {
 	}
 
 	return (
-		<div
-			style={{
-				position: 'fixed',
-				bottom: theme.spacing(2),
-				left: theme.spacing(2),
-				zIndex: theme.zIndex.appBar + 50,
-			}}
-		>
+		<div style={props.style}>
 			<Badge badgeContent={notificacoesNaoLidas.length} color="error">
 				<Fab
 					color="primary"

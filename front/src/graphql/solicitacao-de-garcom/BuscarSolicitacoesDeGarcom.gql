@@ -4,6 +4,7 @@ query BuscarSolicitacoesDeGarcom($idRestaurante: String!) {
         ordenarPor: {
             criadoEm: desc
         }
+        limit: 60
     ) {
         _id
         mesa

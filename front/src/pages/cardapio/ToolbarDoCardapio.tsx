@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import DotsVertical from 'mdi-material-ui/DotsVertical';
 import IconeDeMenu from 'mdi-material-ui/Menu';
 import React from 'react';
-import { BuscarCardapioQuery, BuscarCardapioQueryHookResult } from '../../generated/graphql';
+import { BuscarCardapioQuery } from '../../generated/graphql';
 import { useToolbarStyles } from '../../layouts/AppToolbar';
 import { ToolbarParams } from '../../layouts/Principal';
 
@@ -18,8 +18,16 @@ const useStyles = makeStyles((theme) => ({
     },
 }))
 
+type PropTypes = ToolbarParams & {
+    loja?: BuscarCardapioQuery['loja']
+    loading: boolean
+    mostraEdicao?: boolean
+    setMostraEdicao?: (mostra: boolean) => void
+    podeEditar: boolean
+}
+
 const ToolbarDoCardapio: React.FC<PropTypes> = ({
-    data,
+    loja,
     podeEditar,
     mostraEdicao,
     setMostraEdicao,
@@ -43,9 +51,10 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
         setMostraEdicao && setMostraEdicao(!mostraEdicao)
     }
 
-    const banner = data
-        ? data.loja.banner
+    const banner = loja
+        ? loja.banner
         : null
+
     return (
         <AppBar
             position="absolute"
@@ -69,7 +78,7 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                 >
                     <IconeDeMenu />
                 </IconButton>
-                {!banner && (
+                {!banner && loja && (
                     <Typography
                         component="h1"
                         variant="h6"
@@ -77,7 +86,7 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                         noWrap
                         style={{ paddingLeft: '12px' }}
                     >
-                        {data?.loja.nome}
+                        {loja.nome}
                     </Typography>
                 )}
                 <Box flexGrow={1} />
@@ -117,13 +126,6 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
             </Toolbar>
         </AppBar>
     )
-}
-
-type PropTypes = BuscarCardapioQueryHookResult & ToolbarParams & {
-    data?: BuscarCardapioQuery
-    mostraEdicao?: boolean
-    setMostraEdicao?: (mostra: boolean) => void
-    podeEditar: boolean
 }
 
 export default ToolbarDoCardapio
