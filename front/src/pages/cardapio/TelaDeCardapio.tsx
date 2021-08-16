@@ -120,8 +120,7 @@ function TelaDeCardapio() {
                 </Typography>
             </Grid>
         </Grid>
-    }
-    if (error || !data) {
+    } else if (error || !data) {
         Conteudo = <Grid container>
             <Grid
                 item
