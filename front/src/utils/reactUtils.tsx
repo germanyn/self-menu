@@ -35,7 +35,7 @@ export const useLocalStorage = <T extends unknown> (key: string, initialValue: T
             return item ? JSON.parse(item) : initialValue;
         } catch (error) {
             // If error also return initialValue
-            console.log(error);
+            console.log(`erro ao obter storage ${key}`, error);
             return initialValue;
         }
     });
@@ -51,7 +51,7 @@ export const useLocalStorage = <T extends unknown> (key: string, initialValue: T
             window.localStorage.setItem(key, JSON.stringify(valueToStore));
         } catch (error) {
             // A more advanced implementation would handle the error case
-            console.log(error);
+            console.log(`erro ao preservar storage ${key}`, error);
         }
     };
     return [storedValue, setValue] as const;

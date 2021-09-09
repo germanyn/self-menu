@@ -23,7 +23,8 @@
   },
   "emulators": {
     "functions": {
-      "port": 4000
+      "port": 4000,
+      "host": "0.0.0.0"
     },
     "ui": {
       "enabled": true

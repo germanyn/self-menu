@@ -3,7 +3,7 @@
   "scripts": {
     "build": "tsc",
     "serve": "npm run build && firebase emulators:start --only functions",
-    "shell": "npm run build && firebase functions:shell",
+    "shell": "export GOOGLE_APPLICATION_CREDENTIALS=./self-menu-bc1bab370c53.json && npm run build && firebase emulators:start",
     "dev": "export GOOGLE_APPLICATION_CREDENTIALS=./self-menu-bc1bab370c53.json && ./node_modules/.bin/tsc --watch | firebase serve --only functions",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",

@@ -1,8 +1,10 @@
-import { AppBar, Box, IconButton, makeStyles, Menu, MenuItem, Toolbar, Typography } from '@material-ui/core';
+import { AppBar, Box, Divider, IconButton, ListItemIcon, ListItemText, makeStyles, Menu, MenuItem, Switch, Toolbar, Typography } from '@material-ui/core';
 import clsx from 'clsx';
+import { Qrcode } from 'mdi-material-ui';
 import DotsVertical from 'mdi-material-ui/DotsVertical';
 import IconeDeMenu from 'mdi-material-ui/Menu';
-import React from 'react';
+import React, { useState } from 'react';
+import DialogoDeQrCode from '../../components/DialogoDeQrCode';
 import { BuscarCardapioQuery } from '../../generated/graphql';
 import { useToolbarStyles } from '../../layouts/AppToolbar';
 import { ToolbarParams } from '../../layouts/Principal';
@@ -38,17 +40,22 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
     const toolbarClasses = useToolbarStyles()
 
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [qrCodeAberto, setQrCodeAberto] = useState(false)
 
     const abrirMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
     const fecharMenu = () => {
-        setAnchorEl(null);
+        setAnchorEl(null)
     };
 
     const trocarModoEdicao = () => {
         setMostraEdicao && setMostraEdicao(!mostraEdicao)
+    }
+
+    const handleQrCodeClick = () => {
+        setQrCodeAberto(true)
     }
 
     const banner = loja
@@ -68,6 +75,12 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                 classes.banner
             )}
         >
+            <DialogoDeQrCode
+                aberto={qrCodeAberto}
+                onFechar={() => setQrCodeAberto(false)}
+                data={window.location.href}
+                img={loja?.logo || undefined}
+            />
             <Toolbar className={toolbarClasses.toolbar}>
                 <IconButton
                     edge="start"
@@ -98,7 +111,7 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                     aria-controls="customized-menu"
                     aria-haspopup="true"
                 >
-                    <DotsVertical/>
+                    <DotsVertical />
                 </IconButton>}
                 <Menu
                     id="simple-menu"
@@ -108,20 +121,44 @@ const ToolbarDoCardapio: React.FC<PropTypes> = ({
                     onClose={fecharMenu}
                     getContentAnchorEl={null}
                     anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'center',
+                        vertical: 'bottom',
+                        horizontal: 'center',
                     }}
                     transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'center',
+                        vertical: 'top',
+                        horizontal: 'center',
                     }}
                 >
-                    <MenuItem
-                        onClick={trocarModoEdicao}
-                        color="primary"
-                    >
-                        Modo {mostraEdicao ? 'Preview' : 'Edição'}
-                    </MenuItem>
+                    {podeEditar && [
+                        <MenuItem
+                            key="qr-code"
+                            onClick={handleQrCodeClick}
+                        >
+                            <ListItemIcon>
+                                <Qrcode color="primary" />
+                            </ListItemIcon>
+                            <ListItemText>
+                                QR Code
+                            </ListItemText>
+                        </MenuItem>,
+                        <Divider key="divider" />,
+                        <MenuItem
+                            onClick={trocarModoEdicao}
+                            key="mostra-edicao"
+                        >
+                            <ListItemIcon>
+                                <Switch
+                                    edge="start"
+                                    checked={mostraEdicao}
+                                    name="mostra-edicao"
+                                    color="primary"
+                                />
+                            </ListItemIcon>
+                            <ListItemText>
+                                Modo de Edição
+                            </ListItemText>
+                        </MenuItem>,
+                    ]}
                 </Menu>
             </Toolbar>
         </AppBar>

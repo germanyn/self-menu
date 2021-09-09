@@ -15,7 +15,13 @@ const firebaseApp = firebase.apps.length
   ? firebase.app()
   : firebase.initializeApp(firebaseConfig)
 
-const messaging = firebaseApp.messaging();
+let messaging: firebase.messaging.Messaging | null = null
+
+try {
+  messaging = firebaseApp.messaging();
+} catch (error) {
+  console.error('Não foi possível inicializar', error)
+}
 
 export {
     messaging,
@@ -23,7 +29,7 @@ export {
 
 export const onMessageListener = () =>
   new Promise<any>((resolve) => {
-    messaging.onMessage((payload) => {
+    messaging?.onMessage((payload) => {
       resolve(payload);
     })
 })

@@ -1,5 +1,5 @@
 import { useApolloClient } from "@apollo/client";
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import cloneDeep from 'lodash.clonedeep';
 import { createContext, useContext, useEffect, useState } from "react";
 import { messaging, onMessageListener } from "../configs/firebase";
@@ -111,19 +111,18 @@ export const NotificacaoProvider: React.FC = ({ children }) => {
 	const subscreverPedidos = async () => {
 		if (!registration) return
 		if (!usuario) return
-		const tokenAtual = await messaging.getToken({
+		const tokenAtual = await messaging?.getToken({
 			vapidKey: 'BNy7ltec8hGiMzlfhNHkHtswnZIL5Gdtlq6gyA1y58n5zSIFo6d0eFv3mViB57g5X2LihdluxwUDUx_p-rR1Bx0',
 			serviceWorkerRegistration: registration,
 		})
 		if (tokenAtual) {
-			console.log('current token for client: ', tokenAtual);
 			await notificarPedidos({
 				variables: {
 					idRestaurante: usuario.restaurante,
 					token: tokenAtual,
 				}
 			}).catch(error => {
-				console.log('não foi possível subscrever usuário')
+				console.log('não foi possível subscrever usuário', error)
 			})
 			buscarSolicitacoes({
 				variables: { idRestaurante: usuario.restaurante },

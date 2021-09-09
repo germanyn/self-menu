@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
 
-import firebase from 'firebase'
+import firebase from 'firebase/app'
 require('firebase/messaging')
 import { clientsClaim } from 'workbox-core';
 import { ExpirationPlugin } from 'workbox-expiration';

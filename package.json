@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon -w src --ext ts --exec ts-node src/index.ts",
     "dev": "lerna run start --parallel",
-    "server": "npm run --prefix functions dev",
+    "server": "npm run --prefix functions start",
     "serve": "npm run --prefix front start"
   },
   "devDependencies": {

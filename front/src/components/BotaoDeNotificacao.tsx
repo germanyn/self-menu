@@ -61,7 +61,7 @@ const BotaoDeNotificacao: typeof IconButton = (props: BotaoDeNotificacaoProps) =
 		try {
 			await excluirSolicitacao(id)
 		} catch(error) {
-			console.log(error)
+			console.log('erro ao excluir solicitação ', error)
 		} finally {
 			setExcluindos(excluindos.filter(outroId => outroId !== id))
 		}

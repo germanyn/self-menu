@@ -37,15 +37,16 @@ function TelaDeCardapio() {
     const { idRestaurante } = useParams<{ idRestaurante: string }>()
     const location = useLocation()
     const history = useHistory()
-    const produtoDaQuery = new URLSearchParams(location.search).get('produto')
+    const produtoDaQueryString = new URLSearchParams(location.search).get('produto')
+    const mesaDaQueryString = new URLSearchParams(location.search).get('m')
     const {
         mostraCriarCategoria,
         setMostraCriarCategoria,
         salvando,
     } = useCardapio()
     const [solicitarGarcom] = useSolicitarGarcomMutation()
-    const produto = typeof produtoDaQuery === 'string'
-        ? produtoDaQuery
+    const produto = typeof produtoDaQueryString === 'string'
+        ? produtoDaQueryString
         : undefined
 
     const { data, loading, error } = useBuscarCardapioQuery({
@@ -53,6 +54,11 @@ function TelaDeCardapio() {
     })
 
     const [ultimaMesaPedida, setUltimaMesaPedida] = useLocalStorage<string>(`UltMesa:${idRestaurante}`, '')
+
+    useEffect(() => {
+        if (!mesaDaQueryString) return
+        setUltimaMesaPedida(mesaDaQueryString)
+    }, [mesaDaQueryString, setUltimaMesaPedida])
 
     const [mostraEdicao, setMostraEdicao] = useState(false)
     const [mostraDialogoDeSolicitacao, setMostraDialogoDeSolicitacao] = useState(false)
@@ -117,28 +123,11 @@ function TelaDeCardapio() {
             <Grid item xs={12} style={{ textAlign: 'center' }}>
                 <Typography component="h3" variant="h6" style={{ color: 'grey' }}>
                     Procurando restaurante...
+                    {error && JSON.stringify(error)}
                 </Typography>
             </Grid>
         </Grid>
-    } else if (error || !data) {
-        Conteudo = <Grid container>
-            <Grid
-                item
-                style={{
-                    margin: tema.spacing(2),
-                    textAlign: 'center',
-                }}
-                xs={12}
-            >
-                <StoreRemove style={{ fontSize: '64px', color: 'grey' }}/>
-            </Grid>
-            <Grid item xs={12} style={{ textAlign: 'center' }}>
-                <Typography component="h3" variant="h6">
-                    {error ? error.message : 'Erro ao buscar o restaurante'}
-                </Typography>
-            </Grid>
-        </Grid>
-    } else {
+    } else if (data) {
         Conteudo = <List>
             <LojaNoCardapio
                 mostraEdicao={mostraEdicao}
@@ -157,6 +146,24 @@ function TelaDeCardapio() {
                 loja={data.loja}
             />
         </List>
+    } else {
+        Conteudo = <Grid container>
+            <Grid
+                item
+                style={{
+                    margin: tema.spacing(2),
+                    textAlign: 'center',
+                }}
+                xs={12}
+            >
+                <StoreRemove style={{ fontSize: '64px', color: 'grey' }}/>
+            </Grid>
+            <Grid item xs={12} style={{ textAlign: 'center' }}>
+                <Typography component="h3" variant="h6">
+                    {error ? error.message : 'Erro ao buscar o restaurante'}
+                </Typography>
+            </Grid>
+        </Grid>
     }
 
     return <>
