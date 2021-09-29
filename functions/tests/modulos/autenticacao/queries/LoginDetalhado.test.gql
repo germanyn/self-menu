@@ -1,0 +1,20 @@
+fragment LoginDetalhado on RegistroDeConta {
+    token
+    usuario {
+        _id
+        nome
+        login
+        email
+        contas {
+            _id
+            nome
+            lojas {
+                _id
+                nome
+                conta {
+                    _id
+                }
+            }
+        }
+    }
+}

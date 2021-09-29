@@ -1,0 +1,5 @@
+mutation CriarCategoria($categoria: CriacaoDeCategoria!) {
+  criarCategoria(categoria: $categoria) {
+    ...CategoriaDetalhada
+  }
+}

@@ -23,6 +23,7 @@ export class ProdutoResolver implements ResolverInterface<Produto> {
       preco: entrada.preco,
       conta: entrada.contaId,
       descricao: entrada.descricao,
+      categoria: entrada.categoriaId,
     })
     if (entrada.categoriaId)
       await CategoriaModel.findByIdAndUpdate(entrada.categoriaId, {
@@ -63,5 +64,14 @@ export class ProdutoResolver implements ResolverInterface<Produto> {
       options: { lean: true },
     })
     return resultado.conta
+  }
+
+  @FieldResolver()
+  async categoria(@Root() produto: Produto) {
+    const resultado = await ProdutoModel.populate(produto, {
+      path: 'categoria',
+      options: { lean: true },
+    })
+    return resultado.categoria
   }
 }

@@ -84,5 +84,3 @@ const Principal: React.FC<Props> = (props) => {
 }
 
 export default Principal
-
-

@@ -1,0 +1,5 @@
+query BuscarLoja($idRestaurante: String!) {
+  loja(id: $idRestaurante) {
+    ...LojaDetalhada
+  }
+}

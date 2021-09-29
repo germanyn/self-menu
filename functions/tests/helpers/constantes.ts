@@ -1,0 +1,1 @@
+export const GQL_BASE_URL = '/graphql'

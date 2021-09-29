@@ -7,6 +7,7 @@ export async function criarConexaoComBanco() {
     return await connect(url, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      useFindAndModify: true,
+      useFindAndModify: false,
+      useCreateIndex: true,
     })
 }

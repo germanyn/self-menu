@@ -1,0 +1,12 @@
+overwrite: true
+schema: "http://localhost:4000/self-menu/us-central1/api/graphql"
+documents: "./tests/**/*.gql"
+generates:
+  tests/graphql/generated.ts:
+    plugins:
+      - "typescript"
+      - typescript-document-nodes
+      - typescript-operations
+  ./graphql.schema.json:
+    plugins:
+      - "introspection"

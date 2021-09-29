@@ -1,0 +1,24 @@
+fragment LojaDetalhada on Loja {
+    _id
+    nome
+    podeEditar
+    banner
+    logo
+    cnpj
+    categorias {
+      _id
+    }
+    coresJson
+    conta {
+        _id
+    }
+    endereco {
+      rua
+      numero
+      cep
+      cidade
+      bairro
+      uf
+      complemento
+    }
+}

@@ -1,6 +1,6 @@
 // @ts-check
 const { LojaModel, UsuarioModel } = require("../modulos/models");
-const { criarConexaoComBanco } = require('../database')
+const { criarConexaoComBanco } = require('../infraestrutura/database')
 
 /**
  * Make any changes you need to make to the database here
@@ -14,7 +14,6 @@ async function up () {
       const editores = await UsuarioModel
         .find({ contas: { $in: [loja.conta] }  })
         .select('_id')
-      console.log(editores)
       if (!editores.length)
         throw new Error('Erro ao encontrar editores')
       if (!loja.editores || !loja.editores.length)

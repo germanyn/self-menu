@@ -1,5 +1,7 @@
+import { ForbiddenError } from "apollo-server-errors";
+import { Context } from "infraestrutura/context";
 import { Types } from "mongoose";
-import { Arg, Authorized, FieldResolver, Int, Mutation, Resolver, ResolverInterface, Root } from "type-graphql";
+import { Arg, Authorized, Ctx, FieldResolver, Int, Mutation, Resolver, ResolverInterface, Root } from "type-graphql";
 import { CategoriaModel, LojaModel } from "../models";
 import { Categoria } from "./Categoria";
 import {
@@ -13,10 +15,14 @@ export class CategoriaResolver implements ResolverInterface<Categoria> {
     @Authorized()
     @Mutation(() => Categoria)
     async criarCategoria(
-        @Arg("categoria") entrada: CriacaoDeCategoria
+        @Ctx() context: Context,
+        @Arg("categoria") entrada: CriacaoDeCategoria,
     ) {
         const loja = await LojaModel.findById(entrada.lojaId);
         if (!loja) throw new Error('Loja não encontrada')
+
+        if (!loja.editores.some(editor => editor!.toString() === context.user?.iss))
+            throw new ForbiddenError('Usuário não tem acesso a loja')
 
         const categoria = await CategoriaModel.create({
             nome: entrada.nome,

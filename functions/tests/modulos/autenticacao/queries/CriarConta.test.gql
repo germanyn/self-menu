@@ -1,0 +1,6 @@
+
+mutation Registrar($entrada: EntradaDeConta!) {
+        registrar(entrada: $entrada) {
+                ...LoginDetalhado
+        }
+}

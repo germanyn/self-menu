@@ -1,0 +1,13 @@
+fragment ProdutoDetalhado on Produto {
+    _id
+    nome
+    preco
+    urlDoPrato
+    descricao
+    conta {
+        _id
+    }
+    categoria {
+        _id
+    }
+}

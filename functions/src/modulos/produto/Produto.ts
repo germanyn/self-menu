@@ -1,4 +1,5 @@
 import { prop, Ref } from "@typegoose/typegoose";
+import { Categoria } from "../categoria/Categoria";
 import { Types } from "mongoose";
 import { Field, Float, ID, ObjectType } from "type-graphql";
 import { Conta } from "../conta/Conta";
@@ -30,4 +31,11 @@ export class Produto {
     required: true,
   })
   conta: Ref<Conta>
+
+  @Field(() => Categoria, { nullable: true })
+  @prop({
+    ref: () => Categoria,
+    required: false,
+  })
+  categoria?: Ref<Categoria>
 }

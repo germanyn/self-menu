@@ -28,8 +28,14 @@ export class LojaResolver implements ResolverInterface<Loja> {
 
     @Authorized()
     @Mutation(() => Loja)
-    async criarLoja(@Arg('data') entrada: EntradaDeLoja) {
-        return LojaModel.create(entrada)
+    async criarLoja(@Arg('entrada') entrada: EntradaDeLoja) {
+        const loja = await LojaModel.create({
+            nome: entrada.nome,
+            cnpj: entrada.cnpj,
+            conta: entrada.contaId,
+            endereco: entrada.endereco,
+        })
+        return loja.toObject()
     }
 
     @Authorized()

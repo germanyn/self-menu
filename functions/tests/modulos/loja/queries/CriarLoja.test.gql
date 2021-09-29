@@ -1,0 +1,5 @@
+mutation CriarLoja($entrada: EntradaDeLoja!) {
+    criarLoja(entrada: $entrada) {
+        ...LojaDetalhada
+    }
+}

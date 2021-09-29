@@ -1,0 +1,10 @@
+fragment CategoriaDetalhada on Categoria {
+    _id
+    nome
+    conta {
+      _id
+    }
+    produtos {
+      _id
+    }
+}

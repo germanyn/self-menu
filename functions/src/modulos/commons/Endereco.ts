@@ -23,6 +23,10 @@ export class Endereco {
 
   @Field(() => String)
   @prop({ required: true })
+  bairro: string;
+
+  @Field(() => String)
+  @prop({ required: true })
   uf: string;
 
   @Field(() => String, {
